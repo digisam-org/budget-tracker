@@ -3,7 +3,8 @@
 import { useState } from 'react';
 import { Transaction, Category, Account } from '@/lib/db/schema';
 import { formatCurrency } from '@/lib/utils';
-import { Search, CheckCircle2, Clock, Calendar } from 'lucide-react';
+import { SplitTransactionModal } from '@/components/transactions/split-transaction-modal';
+import { Search, CheckCircle2, Clock, Split, EyeOff } from 'lucide-react';
 
 interface TransactionsListClientProps {
   initialTransactions: Transaction[];
@@ -16,27 +17,50 @@ export function TransactionsListClient({
   categories,
   accounts,
 }: TransactionsListClientProps) {
+  const [txList, setTxList] = useState<Transaction[]>(initialTransactions);
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState<'all' | 'income' | 'expenses' | 'savings'>('all');
-  const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'reviewed'>('all');
+  const [statusFilter, setStatusFilter] = useState<'active' | 'pending' | 'reviewed' | 'ignored'>('active');
+  const [splittingTx, setSplittingTx] = useState<Transaction | null>(null);
 
   const catMap = new Map(categories.map((c) => [c.id, c.name]));
   const accMap = new Map(accounts.map((a) => [a.id, a.name]));
 
-  const filtered = initialTransactions.filter((tx) => {
+  const filtered = txList.filter((tx) => {
     const matchesSearch =
       tx.rawDescription.toLowerCase().includes(search.toLowerCase()) ||
       (tx.cleanMerchant && tx.cleanMerchant.toLowerCase().includes(search.toLowerCase())) ||
       (tx.categoryId && catMap.get(tx.categoryId)?.toLowerCase().includes(search.toLowerCase()));
 
     const matchesStatus =
-      statusFilter === 'all' ? true : tx.status === statusFilter;
+      statusFilter === 'active'
+        ? tx.status !== 'ignored'
+        : tx.status === statusFilter;
 
     const matchesType =
       typeFilter === 'all' ? true : tx.type === typeFilter;
 
     return matchesSearch && matchesStatus && matchesType;
   });
+
+  const handleSplitSuccess = (parentId: string, createdSplits: Transaction[]) => {
+    setSplittingTx(null);
+    setTxList((prev) => {
+      const updated = prev.map((t) =>
+        t.id === parentId
+          ? {
+              ...t,
+              status: 'ignored' as const,
+              metadata: {
+                ...(typeof t.metadata === 'object' && t.metadata ? t.metadata : {}),
+                isSplitParent: true,
+              },
+            }
+          : t
+      );
+      return [...createdSplits, ...updated];
+    });
+  };
 
   return (
     <div className="space-y-4">
@@ -57,7 +81,7 @@ export function TransactionsListClient({
           {/* Type Filter */}
           <select
             value={typeFilter}
-            onChange={(e) => setTypeFilter(e.target.value as any)}
+            onChange={(e) => setTypeFilter(e.target.value as 'all' | 'income' | 'expenses' | 'savings')}
             className="flex-1 bg-zinc-900 border border-zinc-800 text-xs rounded-2xl px-3 py-2 text-zinc-300 focus:outline-none"
           >
             <option value="all">All Types</option>
@@ -69,19 +93,20 @@ export function TransactionsListClient({
           {/* Status Filter */}
           <select
             value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value as any)}
+            onChange={(e) => setStatusFilter(e.target.value as 'active' | 'pending' | 'reviewed' | 'ignored')}
             className="bg-zinc-900 border border-zinc-800 text-xs rounded-2xl px-3 py-2 text-zinc-300 focus:outline-none"
           >
-            <option value="all">All Status</option>
-            <option value="reviewed">Reviewed</option>
-            <option value="pending">Pending</option>
+            <option value="active">Active (Reviewed + Pending)</option>
+            <option value="reviewed">Reviewed Only</option>
+            <option value="pending">Pending Review</option>
+            <option value="ignored">Ignored / Split Parents</option>
           </select>
         </div>
       </div>
 
       {/* Row counter */}
       <div className="text-[11px] text-zinc-500 px-1">
-        Showing {filtered.length} of {initialTransactions.length} tracked records
+        Showing {filtered.length} of {txList.filter((t) => t.status !== 'ignored').length} active records
       </div>
 
       {/* Transactions List */}
@@ -98,20 +123,43 @@ export function TransactionsListClient({
             const accountName = accMap.get(tx.accountId) || 'Account';
             const hasShiftedDate = tx.effectiveDate && tx.effectiveDate !== tx.date;
 
+            const meta =
+              tx.metadata && typeof tx.metadata === 'object'
+                ? (tx.metadata as Record<string, unknown>)
+                : {};
+            const isSplitChild = Boolean(meta.isSplitChild);
+            const isSplitParent = Boolean(meta.isSplitParent);
+
             return (
               <div
                 key={tx.id}
-                className="p-3.5 rounded-2xl bg-zinc-900/60 border border-zinc-800/80 flex items-center justify-between gap-3 transition-colors hover:bg-zinc-900/90"
+                className={`p-3.5 rounded-2xl border flex items-center justify-between gap-3 transition-colors ${
+                  tx.status === 'ignored'
+                    ? 'bg-zinc-950/40 border-zinc-900 opacity-60'
+                    : 'bg-zinc-900/60 border-zinc-800/80 hover:bg-zinc-900/90'
+                }`}
               >
-                <div className="truncate">
+                <div className="truncate flex-1">
                   <div className="flex items-center gap-1.5">
                     <p className="text-xs font-semibold text-zinc-200 truncate">
                       {tx.cleanMerchant || tx.rawDescription}
                     </p>
                     {tx.status === 'reviewed' ? (
                       <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                    ) : tx.status === 'ignored' ? (
+                      <EyeOff className="w-3.5 h-3.5 text-zinc-500 shrink-0" />
                     ) : (
                       <Clock className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                    )}
+                    {isSplitChild && (
+                      <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shrink-0">
+                        Split {String(meta.splitIndex || '')}/{String(meta.splitTotal || '')}
+                      </span>
+                    )}
+                    {isSplitParent && (
+                      <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-400 shrink-0">
+                        Split Parent
+                      </span>
                     )}
                   </div>
 
@@ -129,35 +177,58 @@ export function TransactionsListClient({
                   </div>
                 </div>
 
-                <div className="text-right shrink-0">
-                  <span
-                    className={`text-xs font-bold block ${
-                      isIncome
-                        ? 'text-emerald-400'
-                        : isSavings
-                        ? 'text-sky-400'
-                        : 'text-zinc-200'
-                    }`}
-                  >
-                    {formatCurrency(tx.amount)}
-                  </span>
-                  <span
-                    className={`text-[9px] uppercase tracking-wider font-semibold px-1.5 py-0.5 rounded ${
-                      isIncome
-                        ? 'bg-emerald-500/10 text-emerald-400'
-                        : isSavings
-                        ? 'bg-sky-500/10 text-sky-400'
-                        : 'bg-zinc-800 text-zinc-400'
-                    }`}
-                  >
-                    {tx.type}
-                  </span>
+                <div className="flex items-center gap-2.5 shrink-0">
+                  {tx.status !== 'ignored' && !isSplitParent && (
+                    <button
+                      type="button"
+                      onClick={() => setSplittingTx(tx)}
+                      className="p-1.5 rounded-lg bg-zinc-800/70 hover:bg-zinc-800 text-zinc-400 hover:text-emerald-400 transition-colors"
+                      title="Split transaction across categories"
+                    >
+                      <Split className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+
+                  <div className="text-right">
+                    <span
+                      className={`text-xs font-bold block ${
+                        isIncome
+                          ? 'text-emerald-400'
+                          : isSavings
+                          ? 'text-sky-400'
+                          : 'text-zinc-200'
+                      }`}
+                    >
+                      {formatCurrency(tx.amount)}
+                    </span>
+                    <span
+                      className={`text-[9px] uppercase tracking-wider font-semibold px-1.5 py-0.5 rounded ${
+                        isIncome
+                          ? 'bg-emerald-500/10 text-emerald-400'
+                          : isSavings
+                          ? 'bg-sky-500/10 text-sky-400'
+                          : 'bg-zinc-800 text-zinc-400'
+                      }`}
+                    >
+                      {tx.type}
+                    </span>
+                  </div>
                 </div>
               </div>
             );
           })
         )}
       </div>
+
+      {/* Split Modal */}
+      {splittingTx && (
+        <SplitTransactionModal
+          transaction={splittingTx}
+          categories={categories}
+          onClose={() => setSplittingTx(null)}
+          onSplitSuccess={handleSplitSuccess}
+        />
+      )}
     </div>
   );
 }

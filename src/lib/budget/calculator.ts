@@ -64,6 +64,7 @@ export interface BudgetInputTransaction {
   date: string;
   effectiveDate?: string | null;
   type?: 'income' | 'expenses' | 'savings';
+  status?: 'pending' | 'reviewed' | 'ignored';
   amount: number; // Minor units (in pence)
 }
 
@@ -99,7 +100,7 @@ export function calculateMonthlyBudget(params: {
   // 2. Filter transactions by period using effectiveDate (or fallback to date)
   const actualMap = new Map<string, number>();
   for (const t of transactions) {
-    if (!t.categoryId) continue;
+    if (!t.categoryId || t.status === 'ignored') continue;
 
     const targetDate = t.effectiveDate || t.date;
     const [txYearStr, txMonthStr] = targetDate.split('-');
