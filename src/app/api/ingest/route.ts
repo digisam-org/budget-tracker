@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import Papa from 'papaparse';
 import { db } from '@/lib/db';
 import { eq } from 'drizzle-orm';
-import { importBatches, transactions, categorizationRules } from '@/lib/db/schema';
+import { importBatches, transactions, categorizationRules, appSettings, categories } from '@/lib/db/schema';
 import { detectBankFormat } from '@/lib/ingestion/detector';
 import { normalizeBankRow } from '@/lib/ingestion/normalizer';
 import { generateFingerprint } from '@/lib/ingestion/fingerprint';
@@ -38,8 +38,12 @@ export async function POST(req: NextRequest) {
     // 1. Detect Bank Format
     const detection = detectBankFormat(parseResult.meta.fields);
 
-    // 2. Load categorization rules for auto-tagging
+    // 2. Load categorization rules and app settings
     const existingRules = await db.select().from(categorizationRules);
+    const existingCategories = await db.select().from(categories);
+    const [settings] = await db.select().from(appSettings);
+
+    const catMap = new Map(existingCategories.map((c) => [c.id, c]));
 
     // 3. Normalize rows and generate fingerprints
     const batchId = `batch_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
@@ -58,11 +62,34 @@ export async function POST(req: NextRequest) {
 
       // Match deterministic rules
       const ruleMatch = matchRule(normalized.rawDescription, existingRules);
+      const matchedCat = ruleMatch ? catMap.get(ruleMatch.categoryId) : null;
+
+      const txType: 'income' | 'expenses' | 'savings' =
+        normalized.amount > 0
+          ? 'income'
+          : matchedCat?.type === 'savings'
+          ? 'savings'
+          : 'expenses';
+
+      // Compute Effective Date (Excel Shift Late Income logic)
+      let effectiveDate = normalized.date;
+      if (settings?.shiftLateIncome && txType === 'income') {
+        const parts = normalized.date.split('-');
+        const day = parseInt(parts[2], 10);
+        if (day >= (settings.lateIncomeDay || 20)) {
+          const year = parseInt(parts[0], 10);
+          const month = parseInt(parts[1], 10);
+          const nextDate = new Date(year, month, 1);
+          effectiveDate = nextDate.toISOString().split('T')[0];
+        }
+      }
 
       preparedRows.push({
         id: `tx_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
         fingerprint,
         date: normalized.date,
+        effectiveDate,
+        type: txType,
         amount: normalized.amount,
         accountId,
         categoryId: ruleMatch ? ruleMatch.categoryId : null,

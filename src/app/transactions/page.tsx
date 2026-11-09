@@ -1,5 +1,6 @@
 import { connection } from 'next/server';
 import { db } from '@/lib/db';
+import { desc } from 'drizzle-orm';
 import { transactions, categories, accounts } from '@/lib/db/schema';
 import { TransactionsListClient } from '@/components/transactions/transactions-list-client';
 
@@ -7,7 +8,10 @@ export const instant = false;
 
 export default async function TransactionsPage() {
   await connection();
-  const allTransactions = await db.select().from(transactions);
+  const allTransactions = await db
+    .select()
+    .from(transactions)
+    .orderBy(desc(transactions.date));
   const allCategories = await db.select().from(categories);
   const allAccounts = await db.select().from(accounts);
 

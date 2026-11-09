@@ -143,7 +143,7 @@ export function ReviewQueueClient({
             </div>
           </div>
           <span className="text-[11px] text-zinc-500 uppercase tracking-wider">
-            {currentCat?.group.replace('_', ' ')}
+            {currentCat?.type || 'expenses'}
           </span>
         </div>
 

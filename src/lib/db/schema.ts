@@ -1,13 +1,22 @@
 import { sqliteTable, text, integer, uniqueIndex } from 'drizzle-orm/sqlite-core';
 import { sql } from 'drizzle-orm';
 
+export const appSettings = sqliteTable('app_settings', {
+  id: text('id').primaryKey().default('default'),
+  startingYear: integer('starting_year').default(2026).notNull(),
+  shiftLateIncome: integer('shift_late_income', { mode: 'boolean' }).default(false).notNull(),
+  lateIncomeDay: integer('late_income_day').default(20).notNull(),
+  savingsRateType: text('savings_rate_type', { enum: ['active', 'passive'] }).default('active').notNull(),
+  updatedAt: text('updated_at').default(sql`CURRENT_TIMESTAMP`).notNull(),
+});
+
 export const accounts = sqliteTable('accounts', {
   id: text('id').primaryKey(),
   name: text('name').notNull(),
   type: text('type', { 
     enum: ['checking', 'savings', 'credit_card', 'investment', 'rental'] 
   }).notNull(),
-  institution: text('institution'), // e.g. Barclays, HSBC, Monzo, Vanguard, Amex
+  institution: text('institution'),
   currency: text('currency').default('GBP').notNull(),
   balance: integer('balance').default(0).notNull(), // Minor units (pence)
   isActive: integer('is_active', { mode: 'boolean' }).default(true).notNull(),
@@ -17,9 +26,10 @@ export const accounts = sqliteTable('accounts', {
 export const categories = sqliteTable('categories', {
   id: text('id').primaryKey(),
   name: text('name').notNull(),
-  group: text('group', { 
-    enum: ['income', 'fixed_expense', 'variable_expense', 'rental_property', 'savings_transfer'] 
+  type: text('type', { 
+    enum: ['income', 'expenses', 'savings'] 
   }).notNull(),
+  subgroup: text('subgroup'), // e.g. Fixed Bills, Living, Rental Property, Investments
   isSavingsTransfer: integer('is_savings_transfer', { mode: 'boolean' }).default(false).notNull(),
   color: text('color'),
   icon: text('icon'),
@@ -51,7 +61,9 @@ export const transactions = sqliteTable('transactions', {
   id: text('id').primaryKey(),
   fingerprint: text('fingerprint').notNull().unique(), // SHA-256 (account_id + date + amount + raw_description)
   date: text('date').notNull(), // ISO YYYY-MM-DD
-  amount: integer('amount').notNull(), // Minor units: positive = inflow (+£10.00 is 1000), negative = outflow (-£10.00 is -1000)
+  effectiveDate: text('effective_date'), // ISO YYYY-MM-DD (shifted for late income)
+  type: text('type', { enum: ['income', 'expenses', 'savings'] }).default('expenses').notNull(),
+  amount: integer('amount').notNull(), // Minor units: positive = inflow (+1000 is +£10.00), negative = outflow (-1000 is -£10.00)
   accountId: text('account_id').notNull().references(() => accounts.id),
   categoryId: text('category_id').references(() => categories.id),
   rawDescription: text('raw_description').notNull(),
@@ -61,7 +73,7 @@ export const transactions = sqliteTable('transactions', {
   }).default('pending').notNull(),
   batchId: text('batch_id').references(() => importBatches.id),
   confidenceScore: integer('confidence_score'), // 0 - 100
-  metadata: text('metadata', { mode: 'json' }), // extra parsed fields or LLM reasoning
+  metadata: text('metadata', { mode: 'json' }), // extra parsed fields
   createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`).notNull(),
 });
 
@@ -76,15 +88,10 @@ export const categorizationRules = sqliteTable('categorization_rules', {
   priority: integer('priority').default(1).notNull(),
 });
 
+export type AppSettings = typeof appSettings.$inferSelect;
 export type Account = typeof accounts.$inferSelect;
-export type NewAccount = typeof accounts.$inferInsert;
 export type Category = typeof categories.$inferSelect;
-export type NewCategory = typeof categories.$inferInsert;
 export type BudgetPlan = typeof budgetPlans.$inferSelect;
-export type NewBudgetPlan = typeof budgetPlans.$inferInsert;
 export type Transaction = typeof transactions.$inferSelect;
-export type NewTransaction = typeof transactions.$inferInsert;
 export type CategorizationRule = typeof categorizationRules.$inferSelect;
-export type NewCategorizationRule = typeof categorizationRules.$inferInsert;
 export type ImportBatch = typeof importBatches.$inferSelect;
-export type NewImportBatch = typeof importBatches.$inferInsert;

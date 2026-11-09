@@ -1,0 +1,2660 @@
+{
+  "settings": {
+    "startingYear": 2026,
+    "shiftLateIncome": false,
+    "lateIncomeDay": 20,
+    "savingsRateType": "active"
+  },
+  "categories": [
+    {
+      "id": "cat_employment_net",
+      "name": "Employment (Net)",
+      "type": "income",
+      "subgroup": "General",
+      "isSavingsTransfer": false,
+      "sortOrder": 1
+    },
+    {
+      "id": "cat_rent_from_glasgow_flat",
+      "name": "Rent from Glasgow Flat",
+      "type": "income",
+      "subgroup": "Rental Property",
+      "isSavingsTransfer": false,
+      "sortOrder": 2
+    },
+    {
+      "id": "cat_bonus",
+      "name": "Bonus",
+      "type": "income",
+      "subgroup": "General",
+      "isSavingsTransfer": false,
+      "sortOrder": 3
+    },
+    {
+      "id": "cat_housing",
+      "name": "Housing",
+      "type": "expenses",
+      "subgroup": "Fixed Bills",
+      "isSavingsTransfer": false,
+      "sortOrder": 4
+    },
+    {
+      "id": "cat_taxes",
+      "name": "Taxes",
+      "type": "expenses",
+      "subgroup": "Fixed Bills",
+      "isSavingsTransfer": false,
+      "sortOrder": 5
+    },
+    {
+      "id": "cat_groceries",
+      "name": "Groceries",
+      "type": "expenses",
+      "subgroup": "Living",
+      "isSavingsTransfer": false,
+      "sortOrder": 6
+    },
+    {
+      "id": "cat_entertainment",
+      "name": "Entertainment",
+      "type": "expenses",
+      "subgroup": "Living",
+      "isSavingsTransfer": false,
+      "sortOrder": 7
+    },
+    {
+      "id": "cat_shopping",
+      "name": "Shopping",
+      "type": "expenses",
+      "subgroup": "Living",
+      "isSavingsTransfer": false,
+      "sortOrder": 8
+    },
+    {
+      "id": "cat_general_one_off",
+      "name": "General (One off)",
+      "type": "expenses",
+      "subgroup": "General",
+      "isSavingsTransfer": false,
+      "sortOrder": 9
+    },
+    {
+      "id": "cat_digisam_foundation",
+      "name": "DigiSam Foundation",
+      "type": "expenses",
+      "subgroup": "General",
+      "isSavingsTransfer": false,
+      "sortOrder": 10
+    },
+    {
+      "id": "cat_transport",
+      "name": "Transport",
+      "type": "expenses",
+      "subgroup": "Living",
+      "isSavingsTransfer": false,
+      "sortOrder": 11
+    },
+    {
+      "id": "cat_finances",
+      "name": "Finances",
+      "type": "expenses",
+      "subgroup": "General",
+      "isSavingsTransfer": false,
+      "sortOrder": 12
+    },
+    {
+      "id": "cat_health_and_beauty",
+      "name": "Health & Beauty",
+      "type": "expenses",
+      "subgroup": "General",
+      "isSavingsTransfer": false,
+      "sortOrder": 13
+    },
+    {
+      "id": "cat_eating_out",
+      "name": "Eating Out",
+      "type": "expenses",
+      "subgroup": "Living",
+      "isSavingsTransfer": false,
+      "sortOrder": 14
+    },
+    {
+      "id": "cat_utilities",
+      "name": "Utilities",
+      "type": "expenses",
+      "subgroup": "Fixed Bills",
+      "isSavingsTransfer": false,
+      "sortOrder": 15
+    },
+    {
+      "id": "cat_chitra_payback",
+      "name": "Chitra Payback",
+      "type": "expenses",
+      "subgroup": "General",
+      "isSavingsTransfer": false,
+      "sortOrder": 16
+    },
+    {
+      "id": "cat_max_life_growth_fund",
+      "name": "Max life growth fund",
+      "type": "savings",
+      "subgroup": "Investments & Savings",
+      "isSavingsTransfer": true,
+      "sortOrder": 17
+    },
+    {
+      "id": "cat_emergency_money",
+      "name": "Emergency Money",
+      "type": "savings",
+      "subgroup": "Investments & Savings",
+      "isSavingsTransfer": true,
+      "sortOrder": 18
+    },
+    {
+      "id": "cat_ikbr_stock_portfolio_contribution",
+      "name": "IKBR Stock Portfolio Contribution",
+      "type": "savings",
+      "subgroup": "Investments & Savings",
+      "isSavingsTransfer": true,
+      "sortOrder": 19
+    },
+    {
+      "id": "cat_holidays",
+      "name": "Holidays",
+      "type": "savings",
+      "subgroup": "Investments & Savings",
+      "isSavingsTransfer": true,
+      "sortOrder": 20
+    },
+    {
+      "id": "cat_retirement_investment",
+      "name": "Retirement Investment",
+      "type": "savings",
+      "subgroup": "Investments & Savings",
+      "isSavingsTransfer": true,
+      "sortOrder": 21
+    },
+    {
+      "id": "cat_factor_fee",
+      "name": "Factor Fee",
+      "type": "savings",
+      "subgroup": "Investments & Savings",
+      "isSavingsTransfer": true,
+      "sortOrder": 22
+    },
+    {
+      "id": "cat_extra_fund_towards_retirement_savings",
+      "name": "Extra fund towards Retirement savings",
+      "type": "savings",
+      "subgroup": "Investments & Savings",
+      "isSavingsTransfer": true,
+      "sortOrder": 23
+    },
+    {
+      "id": "cat_motorbike_annual_service,_road_tax_and_insurance",
+      "name": "Motorbike annual service, road tax and insurance",
+      "type": "savings",
+      "subgroup": "Investments & Savings",
+      "isSavingsTransfer": true,
+      "sortOrder": 24
+    }
+  ],
+  "budgetPlans": [
+    {
+      "categoryId": "cat_employment_net",
+      "year": 2026,
+      "month": 1,
+      "plannedAmount": 584656
+    },
+    {
+      "categoryId": "cat_employment_net",
+      "year": 2026,
+      "month": 2,
+      "plannedAmount": 584700
+    },
+    {
+      "categoryId": "cat_employment_net",
+      "year": 2026,
+      "month": 3,
+      "plannedAmount": 584700
+    },
+    {
+      "categoryId": "cat_employment_net",
+      "year": 2026,
+      "month": 7,
+      "plannedAmount": 649381
+    },
+    {
+      "categoryId": "cat_employment_net",
+      "year": 2026,
+      "month": 8,
+      "plannedAmount": 557900
+    },
+    {
+      "categoryId": "cat_employment_net",
+      "year": 2026,
+      "month": 9,
+      "plannedAmount": 557900
+    },
+    {
+      "categoryId": "cat_rent_from_glasgow_flat",
+      "year": 2026,
+      "month": 3,
+      "plannedAmount": 75000
+    },
+    {
+      "categoryId": "cat_rent_from_glasgow_flat",
+      "year": 2026,
+      "month": 7,
+      "plannedAmount": 87560
+    },
+    {
+      "categoryId": "cat_rent_from_glasgow_flat",
+      "year": 2026,
+      "month": 8,
+      "plannedAmount": 87600
+    },
+    {
+      "categoryId": "cat_rent_from_glasgow_flat",
+      "year": 2026,
+      "month": 9,
+      "plannedAmount": 87600
+    },
+    {
+      "categoryId": "cat_bonus",
+      "year": 2026,
+      "month": 1,
+      "plannedAmount": 519400
+    },
+    {
+      "categoryId": "cat_housing",
+      "year": 2026,
+      "month": 1,
+      "plannedAmount": 209100
+    },
+    {
+      "categoryId": "cat_housing",
+      "year": 2026,
+      "month": 2,
+      "plannedAmount": 209100
+    },
+    {
+      "categoryId": "cat_housing",
+      "year": 2026,
+      "month": 3,
+      "plannedAmount": 209100
+    },
+    {
+      "categoryId": "cat_housing",
+      "year": 2026,
+      "month": 7,
+      "plannedAmount": 209100
+    },
+    {
+      "categoryId": "cat_housing",
+      "year": 2026,
+      "month": 8,
+      "plannedAmount": 209100
+    },
+    {
+      "categoryId": "cat_housing",
+      "year": 2026,
+      "month": 9,
+      "plannedAmount": 209100
+    },
+    {
+      "categoryId": "cat_taxes",
+      "year": 2026,
+      "month": 1,
+      "plannedAmount": 37258
+    },
+    {
+      "categoryId": "cat_taxes",
+      "year": 2026,
+      "month": 2,
+      "plannedAmount": 48100
+    },
+    {
+      "categoryId": "cat_taxes",
+      "year": 2026,
+      "month": 3,
+      "plannedAmount": 16400
+    },
+    {
+      "categoryId": "cat_taxes",
+      "year": 2026,
+      "month": 7,
+      "plannedAmount": 13700
+    },
+    {
+      "categoryId": "cat_taxes",
+      "year": 2026,
+      "month": 8,
+      "plannedAmount": 13700
+    },
+    {
+      "categoryId": "cat_taxes",
+      "year": 2026,
+      "month": 9,
+      "plannedAmount": 13700
+    },
+    {
+      "categoryId": "cat_groceries",
+      "year": 2026,
+      "month": 1,
+      "plannedAmount": 25000
+    },
+    {
+      "categoryId": "cat_groceries",
+      "year": 2026,
+      "month": 2,
+      "plannedAmount": 18000
+    },
+    {
+      "categoryId": "cat_groceries",
+      "year": 2026,
+      "month": 3,
+      "plannedAmount": 20000
+    },
+    {
+      "categoryId": "cat_groceries",
+      "year": 2026,
+      "month": 7,
+      "plannedAmount": 25000
+    },
+    {
+      "categoryId": "cat_groceries",
+      "year": 2026,
+      "month": 8,
+      "plannedAmount": 25000
+    },
+    {
+      "categoryId": "cat_groceries",
+      "year": 2026,
+      "month": 9,
+      "plannedAmount": 25000
+    },
+    {
+      "categoryId": "cat_entertainment",
+      "year": 2026,
+      "month": 1,
+      "plannedAmount": 10000
+    },
+    {
+      "categoryId": "cat_entertainment",
+      "year": 2026,
+      "month": 2,
+      "plannedAmount": 5000
+    },
+    {
+      "categoryId": "cat_entertainment",
+      "year": 2026,
+      "month": 3,
+      "plannedAmount": 8000
+    },
+    {
+      "categoryId": "cat_entertainment",
+      "year": 2026,
+      "month": 7,
+      "plannedAmount": 6000
+    },
+    {
+      "categoryId": "cat_entertainment",
+      "year": 2026,
+      "month": 8,
+      "plannedAmount": 8000
+    },
+    {
+      "categoryId": "cat_entertainment",
+      "year": 2026,
+      "month": 9,
+      "plannedAmount": 8000
+    },
+    {
+      "categoryId": "cat_shopping",
+      "year": 2026,
+      "month": 1,
+      "plannedAmount": 5000
+    },
+    {
+      "categoryId": "cat_shopping",
+      "year": 2026,
+      "month": 2,
+      "plannedAmount": 47000
+    },
+    {
+      "categoryId": "cat_shopping",
+      "year": 2026,
+      "month": 3,
+      "plannedAmount": 5000
+    },
+    {
+      "categoryId": "cat_shopping",
+      "year": 2026,
+      "month": 7,
+      "plannedAmount": 10000
+    },
+    {
+      "categoryId": "cat_shopping",
+      "year": 2026,
+      "month": 8,
+      "plannedAmount": 8000
+    },
+    {
+      "categoryId": "cat_shopping",
+      "year": 2026,
+      "month": 9,
+      "plannedAmount": 10000
+    },
+    {
+      "categoryId": "cat_general_one_off",
+      "year": 2026,
+      "month": 1,
+      "plannedAmount": 10000
+    },
+    {
+      "categoryId": "cat_general_one_off",
+      "year": 2026,
+      "month": 2,
+      "plannedAmount": 8000
+    },
+    {
+      "categoryId": "cat_general_one_off",
+      "year": 2026,
+      "month": 3,
+      "plannedAmount": 5000
+    },
+    {
+      "categoryId": "cat_general_one_off",
+      "year": 2026,
+      "month": 7,
+      "plannedAmount": 50000
+    },
+    {
+      "categoryId": "cat_general_one_off",
+      "year": 2026,
+      "month": 8,
+      "plannedAmount": 10000
+    },
+    {
+      "categoryId": "cat_general_one_off",
+      "year": 2026,
+      "month": 9,
+      "plannedAmount": 10000
+    },
+    {
+      "categoryId": "cat_digisam_foundation",
+      "year": 2026,
+      "month": 1,
+      "plannedAmount": 8600
+    },
+    {
+      "categoryId": "cat_digisam_foundation",
+      "year": 2026,
+      "month": 2,
+      "plannedAmount": 8100
+    },
+    {
+      "categoryId": "cat_digisam_foundation",
+      "year": 2026,
+      "month": 3,
+      "plannedAmount": 8100
+    },
+    {
+      "categoryId": "cat_digisam_foundation",
+      "year": 2026,
+      "month": 7,
+      "plannedAmount": 8000
+    },
+    {
+      "categoryId": "cat_digisam_foundation",
+      "year": 2026,
+      "month": 8,
+      "plannedAmount": 18000
+    },
+    {
+      "categoryId": "cat_digisam_foundation",
+      "year": 2026,
+      "month": 9,
+      "plannedAmount": 8000
+    },
+    {
+      "categoryId": "cat_transport",
+      "year": 2026,
+      "month": 1,
+      "plannedAmount": 10000
+    },
+    {
+      "categoryId": "cat_transport",
+      "year": 2026,
+      "month": 2,
+      "plannedAmount": 7000
+    },
+    {
+      "categoryId": "cat_transport",
+      "year": 2026,
+      "month": 3,
+      "plannedAmount": 25000
+    },
+    {
+      "categoryId": "cat_transport",
+      "year": 2026,
+      "month": 7,
+      "plannedAmount": 30000
+    },
+    {
+      "categoryId": "cat_transport",
+      "year": 2026,
+      "month": 8,
+      "plannedAmount": 15000
+    },
+    {
+      "categoryId": "cat_transport",
+      "year": 2026,
+      "month": 9,
+      "plannedAmount": 10000
+    },
+    {
+      "categoryId": "cat_finances",
+      "year": 2026,
+      "month": 1,
+      "plannedAmount": 10909
+    },
+    {
+      "categoryId": "cat_finances",
+      "year": 2026,
+      "month": 2,
+      "plannedAmount": 10900
+    },
+    {
+      "categoryId": "cat_finances",
+      "year": 2026,
+      "month": 3,
+      "plannedAmount": 10900
+    },
+    {
+      "categoryId": "cat_finances",
+      "year": 2026,
+      "month": 7,
+      "plannedAmount": 10900
+    },
+    {
+      "categoryId": "cat_finances",
+      "year": 2026,
+      "month": 8,
+      "plannedAmount": 10900
+    },
+    {
+      "categoryId": "cat_finances",
+      "year": 2026,
+      "month": 9,
+      "plannedAmount": 10900
+    },
+    {
+      "categoryId": "cat_health_and_beauty",
+      "year": 2026,
+      "month": 1,
+      "plannedAmount": 11100
+    },
+    {
+      "categoryId": "cat_health_and_beauty",
+      "year": 2026,
+      "month": 2,
+      "plannedAmount": 14000
+    },
+    {
+      "categoryId": "cat_health_and_beauty",
+      "year": 2026,
+      "month": 3,
+      "plannedAmount": 17000
+    },
+    {
+      "categoryId": "cat_health_and_beauty",
+      "year": 2026,
+      "month": 7,
+      "plannedAmount": 13000
+    },
+    {
+      "categoryId": "cat_health_and_beauty",
+      "year": 2026,
+      "month": 8,
+      "plannedAmount": 13000
+    },
+    {
+      "categoryId": "cat_health_and_beauty",
+      "year": 2026,
+      "month": 9,
+      "plannedAmount": 13000
+    },
+    {
+      "categoryId": "cat_eating_out",
+      "year": 2026,
+      "month": 1,
+      "plannedAmount": 10000
+    },
+    {
+      "categoryId": "cat_eating_out",
+      "year": 2026,
+      "month": 2,
+      "plannedAmount": 10000
+    },
+    {
+      "categoryId": "cat_eating_out",
+      "year": 2026,
+      "month": 3,
+      "plannedAmount": 15000
+    },
+    {
+      "categoryId": "cat_eating_out",
+      "year": 2026,
+      "month": 7,
+      "plannedAmount": 10000
+    },
+    {
+      "categoryId": "cat_eating_out",
+      "year": 2026,
+      "month": 8,
+      "plannedAmount": 10000
+    },
+    {
+      "categoryId": "cat_eating_out",
+      "year": 2026,
+      "month": 9,
+      "plannedAmount": 15000
+    },
+    {
+      "categoryId": "cat_utilities",
+      "year": 2026,
+      "month": 1,
+      "plannedAmount": 38065
+    },
+    {
+      "categoryId": "cat_utilities",
+      "year": 2026,
+      "month": 2,
+      "plannedAmount": 34100
+    },
+    {
+      "categoryId": "cat_utilities",
+      "year": 2026,
+      "month": 3,
+      "plannedAmount": 36500
+    },
+    {
+      "categoryId": "cat_utilities",
+      "year": 2026,
+      "month": 7,
+      "plannedAmount": 37000
+    },
+    {
+      "categoryId": "cat_utilities",
+      "year": 2026,
+      "month": 8,
+      "plannedAmount": 37000
+    },
+    {
+      "categoryId": "cat_utilities",
+      "year": 2026,
+      "month": 9,
+      "plannedAmount": 39000
+    },
+    {
+      "categoryId": "cat_chitra_payback",
+      "year": 2026,
+      "month": 1,
+      "plannedAmount": 25000
+    },
+    {
+      "categoryId": "cat_chitra_payback",
+      "year": 2026,
+      "month": 2,
+      "plannedAmount": 25000
+    },
+    {
+      "categoryId": "cat_chitra_payback",
+      "year": 2026,
+      "month": 3,
+      "plannedAmount": 25000
+    },
+    {
+      "categoryId": "cat_chitra_payback",
+      "year": 2026,
+      "month": 7,
+      "plannedAmount": 25000
+    },
+    {
+      "categoryId": "cat_chitra_payback",
+      "year": 2026,
+      "month": 8,
+      "plannedAmount": 25000
+    },
+    {
+      "categoryId": "cat_chitra_payback",
+      "year": 2026,
+      "month": 9,
+      "plannedAmount": 25000
+    },
+    {
+      "categoryId": "cat_max_life_growth_fund",
+      "year": 2026,
+      "month": 1,
+      "plannedAmount": 50000
+    },
+    {
+      "categoryId": "cat_max_life_growth_fund",
+      "year": 2026,
+      "month": 2,
+      "plannedAmount": 50000
+    },
+    {
+      "categoryId": "cat_max_life_growth_fund",
+      "year": 2026,
+      "month": 3,
+      "plannedAmount": 50000
+    },
+    {
+      "categoryId": "cat_max_life_growth_fund",
+      "year": 2026,
+      "month": 7,
+      "plannedAmount": 50000
+    },
+    {
+      "categoryId": "cat_max_life_growth_fund",
+      "year": 2026,
+      "month": 8,
+      "plannedAmount": 50000
+    },
+    {
+      "categoryId": "cat_max_life_growth_fund",
+      "year": 2026,
+      "month": 9,
+      "plannedAmount": 50000
+    },
+    {
+      "categoryId": "cat_emergency_money",
+      "year": 2026,
+      "month": 1,
+      "plannedAmount": 10000
+    },
+    {
+      "categoryId": "cat_emergency_money",
+      "year": 2026,
+      "month": 2,
+      "plannedAmount": 10000
+    },
+    {
+      "categoryId": "cat_emergency_money",
+      "year": 2026,
+      "month": 3,
+      "plannedAmount": 10000
+    },
+    {
+      "categoryId": "cat_emergency_money",
+      "year": 2026,
+      "month": 7,
+      "plannedAmount": 10000
+    },
+    {
+      "categoryId": "cat_emergency_money",
+      "year": 2026,
+      "month": 8,
+      "plannedAmount": 10000
+    },
+    {
+      "categoryId": "cat_emergency_money",
+      "year": 2026,
+      "month": 9,
+      "plannedAmount": 10000
+    },
+    {
+      "categoryId": "cat_ikbr_stock_portfolio_contribution",
+      "year": 2026,
+      "month": 1,
+      "plannedAmount": 20000
+    },
+    {
+      "categoryId": "cat_ikbr_stock_portfolio_contribution",
+      "year": 2026,
+      "month": 2,
+      "plannedAmount": 0
+    },
+    {
+      "categoryId": "cat_ikbr_stock_portfolio_contribution",
+      "year": 2026,
+      "month": 7,
+      "plannedAmount": 5000
+    },
+    {
+      "categoryId": "cat_ikbr_stock_portfolio_contribution",
+      "year": 2026,
+      "month": 8,
+      "plannedAmount": 5000
+    },
+    {
+      "categoryId": "cat_ikbr_stock_portfolio_contribution",
+      "year": 2026,
+      "month": 9,
+      "plannedAmount": 5000
+    },
+    {
+      "categoryId": "cat_holidays",
+      "year": 2026,
+      "month": 1,
+      "plannedAmount": 18000
+    },
+    {
+      "categoryId": "cat_holidays",
+      "year": 2026,
+      "month": 2,
+      "plannedAmount": 18000
+    },
+    {
+      "categoryId": "cat_holidays",
+      "year": 2026,
+      "month": 3,
+      "plannedAmount": 18000
+    },
+    {
+      "categoryId": "cat_holidays",
+      "year": 2026,
+      "month": 7,
+      "plannedAmount": 18000
+    },
+    {
+      "categoryId": "cat_holidays",
+      "year": 2026,
+      "month": 8,
+      "plannedAmount": 18000
+    },
+    {
+      "categoryId": "cat_holidays",
+      "year": 2026,
+      "month": 9,
+      "plannedAmount": 18000
+    },
+    {
+      "categoryId": "cat_retirement_investment",
+      "year": 2026,
+      "month": 1,
+      "plannedAmount": 150000
+    },
+    {
+      "categoryId": "cat_retirement_investment",
+      "year": 2026,
+      "month": 2,
+      "plannedAmount": 150000
+    },
+    {
+      "categoryId": "cat_retirement_investment",
+      "year": 2026,
+      "month": 3,
+      "plannedAmount": 150000
+    },
+    {
+      "categoryId": "cat_retirement_investment",
+      "year": 2026,
+      "month": 7,
+      "plannedAmount": 150000
+    },
+    {
+      "categoryId": "cat_retirement_investment",
+      "year": 2026,
+      "month": 8,
+      "plannedAmount": 150000
+    },
+    {
+      "categoryId": "cat_retirement_investment",
+      "year": 2026,
+      "month": 9,
+      "plannedAmount": 150000
+    },
+    {
+      "categoryId": "cat_factor_fee",
+      "year": 2026,
+      "month": 1,
+      "plannedAmount": 8300
+    },
+    {
+      "categoryId": "cat_factor_fee",
+      "year": 2026,
+      "month": 2,
+      "plannedAmount": 8300
+    },
+    {
+      "categoryId": "cat_factor_fee",
+      "year": 2026,
+      "month": 3,
+      "plannedAmount": 8300
+    },
+    {
+      "categoryId": "cat_factor_fee",
+      "year": 2026,
+      "month": 7,
+      "plannedAmount": 8300
+    },
+    {
+      "categoryId": "cat_factor_fee",
+      "year": 2026,
+      "month": 8,
+      "plannedAmount": 8300
+    },
+    {
+      "categoryId": "cat_factor_fee",
+      "year": 2026,
+      "month": 9,
+      "plannedAmount": 8300
+    },
+    {
+      "categoryId": "cat_extra_fund_towards_retirement_savings",
+      "year": 2026,
+      "month": 3,
+      "plannedAmount": 490000
+    },
+    {
+      "categoryId": "cat_motorbike_annual_service,_road_tax_and_insurance",
+      "year": 2026,
+      "month": 8,
+      "plannedAmount": 2000
+    },
+    {
+      "categoryId": "cat_motorbike_annual_service,_road_tax_and_insurance",
+      "year": 2026,
+      "month": 9,
+      "plannedAmount": 2000
+    }
+  ],
+  "transactions": [
+    {
+      "date": "2026-01-02",
+      "effectiveDate": "2026-01-02",
+      "type": "expenses",
+      "categoryName": "Housing",
+      "categoryId": "cat_housing",
+      "amount": -84091,
+      "details": "Nationwide - mortgage"
+    },
+    {
+      "date": "2026-01-17",
+      "effectiveDate": "2026-01-17",
+      "type": "expenses",
+      "categoryName": "Utilities",
+      "categoryId": "cat_utilities",
+      "amount": -1199,
+      "details": "Apple - subscription"
+    },
+    {
+      "date": "2026-01-14",
+      "effectiveDate": "2026-01-14",
+      "type": "expenses",
+      "categoryName": "Utilities",
+      "categoryId": "cat_utilities",
+      "amount": -459,
+      "details": "Medium - subscription"
+    },
+    {
+      "date": "2026-01-02",
+      "effectiveDate": "2026-01-02",
+      "type": "expenses",
+      "categoryName": "Utilities",
+      "categoryId": "cat_utilities",
+      "amount": -1495,
+      "details": "TV Licensing"
+    },
+    {
+      "date": "2026-01-02",
+      "effectiveDate": "2026-01-02",
+      "type": "expenses",
+      "categoryName": "Utilities",
+      "categoryId": "cat_utilities",
+      "amount": -10500,
+      "details": "Bike park leith"
+    },
+    {
+      "date": "2026-01-07",
+      "effectiveDate": "2026-01-07",
+      "type": "expenses",
+      "categoryName": "Utilities",
+      "categoryId": "cat_utilities",
+      "amount": -6917,
+      "details": "Vodafone"
+    },
+    {
+      "date": "2026-01-12",
+      "effectiveDate": "2026-01-12",
+      "type": "expenses",
+      "categoryName": "Utilities",
+      "categoryId": "cat_utilities",
+      "amount": -1800,
+      "details": "Claude AI Subscription"
+    },
+    {
+      "date": "2026-01-02",
+      "effectiveDate": "2026-01-02",
+      "type": "expenses",
+      "categoryName": "Taxes",
+      "categoryId": "cat_taxes",
+      "amount": -16400,
+      "details": "Edinburgh Council Tax"
+    },
+    {
+      "date": "2026-01-17",
+      "effectiveDate": "2026-01-17",
+      "type": "expenses",
+      "categoryName": "Groceries",
+      "categoryId": "cat_groceries",
+      "amount": -13938,
+      "details": "Groceries till 18th"
+    },
+    {
+      "date": "2026-01-11",
+      "effectiveDate": "2026-01-11",
+      "type": "expenses",
+      "categoryName": "General (One off)",
+      "categoryId": "cat_general_one_off",
+      "amount": -12150,
+      "details": "General till 18th"
+    },
+    {
+      "date": "2026-01-08",
+      "effectiveDate": "2026-01-08",
+      "type": "expenses",
+      "categoryName": "Health & Beauty",
+      "categoryId": "cat_health_and_beauty",
+      "amount": -5100,
+      "details": "Grange Cricket Club"
+    },
+    {
+      "date": "2026-01-13",
+      "effectiveDate": "2026-01-13",
+      "type": "expenses",
+      "categoryName": "Health & Beauty",
+      "categoryId": "cat_health_and_beauty",
+      "amount": -3100,
+      "details": "Haircut"
+    },
+    {
+      "date": "2026-01-16",
+      "effectiveDate": "2026-01-16",
+      "type": "expenses",
+      "categoryName": "Health & Beauty",
+      "categoryId": "cat_health_and_beauty",
+      "amount": -2700,
+      "details": "Alien Rock"
+    },
+    {
+      "date": "2026-01-04",
+      "effectiveDate": "2026-01-04",
+      "type": "expenses",
+      "categoryName": "Entertainment",
+      "categoryId": "cat_entertainment",
+      "amount": -3780,
+      "details": "Cinema"
+    },
+    {
+      "date": "2026-01-12",
+      "effectiveDate": "2026-01-12",
+      "type": "expenses",
+      "categoryName": "Entertainment",
+      "categoryId": "cat_entertainment",
+      "amount": -5078,
+      "details": "Concert - Celtic connection"
+    },
+    {
+      "date": "2026-01-16",
+      "effectiveDate": "2026-01-16",
+      "type": "expenses",
+      "categoryName": "Transport",
+      "categoryId": "cat_transport",
+      "amount": -8315,
+      "details": "Transport combined"
+    },
+    {
+      "date": "2026-01-18",
+      "effectiveDate": "2026-01-18",
+      "type": "expenses",
+      "categoryName": "Eating Out",
+      "categoryId": "cat_eating_out",
+      "amount": -8203,
+      "details": "Eating out combined"
+    },
+    {
+      "date": "2026-01-17",
+      "effectiveDate": "2026-01-17",
+      "type": "expenses",
+      "categoryName": "Shopping",
+      "categoryId": "cat_shopping",
+      "amount": -7674,
+      "details": "Shopping combined"
+    },
+    {
+      "date": "2026-01-20",
+      "effectiveDate": "2026-01-20",
+      "type": "income",
+      "categoryName": "Employment (Net)",
+      "categoryId": "cat_employment_net",
+      "amount": 589655,
+      "details": "Regular salary"
+    },
+    {
+      "date": "2026-01-30",
+      "effectiveDate": "2026-01-30",
+      "type": "income",
+      "categoryName": "Bonus",
+      "categoryId": "cat_bonus",
+      "amount": 519400,
+      "details": "Bonus"
+    },
+    {
+      "date": "2026-01-28",
+      "effectiveDate": "2026-01-28",
+      "type": "expenses",
+      "categoryName": "Housing",
+      "categoryId": "cat_housing",
+      "amount": -125000,
+      "details": "Edinburgh Rent"
+    },
+    {
+      "date": "2026-01-27",
+      "effectiveDate": "2026-01-27",
+      "type": "expenses",
+      "categoryName": "Finances",
+      "categoryId": "cat_finances",
+      "amount": -10909,
+      "details": "Bike finance"
+    },
+    {
+      "date": "2026-01-28",
+      "effectiveDate": "2026-01-28",
+      "type": "savings",
+      "categoryName": "Retirement Investment",
+      "categoryId": "cat_retirement_investment",
+      "amount": -150000,
+      "details": "St James place"
+    },
+    {
+      "date": "2026-01-25",
+      "effectiveDate": "2026-01-25",
+      "type": "expenses",
+      "categoryName": "Utilities",
+      "categoryId": "cat_utilities",
+      "amount": -599,
+      "details": "Snoop Subscription"
+    },
+    {
+      "date": "2026-01-25",
+      "effectiveDate": "2026-01-25",
+      "type": "expenses",
+      "categoryName": "Utilities",
+      "categoryId": "cat_utilities",
+      "amount": -1299,
+      "details": "Spotify"
+    },
+    {
+      "date": "2026-01-26",
+      "effectiveDate": "2026-01-26",
+      "type": "expenses",
+      "categoryName": "Utilities",
+      "categoryId": "cat_utilities",
+      "amount": -1899,
+      "details": "Google One"
+    },
+    {
+      "date": "2026-01-27",
+      "effectiveDate": "2026-01-27",
+      "type": "expenses",
+      "categoryName": "Utilities",
+      "categoryId": "cat_utilities",
+      "amount": -3436,
+      "details": "Octopus Energy"
+    },
+    {
+      "date": "2026-01-28",
+      "effectiveDate": "2026-01-28",
+      "type": "expenses",
+      "categoryName": "Utilities",
+      "categoryId": "cat_utilities",
+      "amount": -3500,
+      "details": "OVO Energy"
+    },
+    {
+      "date": "2026-01-30",
+      "effectiveDate": "2026-01-30",
+      "type": "expenses",
+      "categoryName": "Groceries",
+      "categoryId": "cat_groceries",
+      "amount": -13500,
+      "details": "Groceries from 18th to end of month"
+    },
+    {
+      "date": "2026-01-31",
+      "effectiveDate": "2026-01-31",
+      "type": "expenses",
+      "categoryName": "Eating Out",
+      "categoryId": "cat_eating_out",
+      "amount": -18500,
+      "details": "Eating Out for east of the month"
+    },
+    {
+      "date": "2026-01-31",
+      "effectiveDate": "2026-01-31",
+      "type": "expenses",
+      "categoryName": "Transport",
+      "categoryId": "cat_transport",
+      "amount": -4440,
+      "details": "Transport Rest of the month"
+    },
+    {
+      "date": "2026-01-19",
+      "effectiveDate": "2026-01-19",
+      "type": "expenses",
+      "categoryName": "Health & Beauty",
+      "categoryId": "cat_health_and_beauty",
+      "amount": -1350,
+      "details": "Badminton"
+    },
+    {
+      "date": "2026-01-17",
+      "effectiveDate": "2026-01-17",
+      "type": "expenses",
+      "categoryName": "Groceries",
+      "categoryId": "cat_groceries",
+      "amount": -977,
+      "details": "Butchers"
+    },
+    {
+      "date": "2026-01-22",
+      "effectiveDate": "2026-01-22",
+      "type": "savings",
+      "categoryName": "Max life growth fund",
+      "categoryId": "cat_max_life_growth_fund",
+      "amount": -50000,
+      "details": "Added to Savings"
+    },
+    {
+      "date": "2026-01-22",
+      "effectiveDate": "2026-01-22",
+      "type": "savings",
+      "categoryName": "Emergency Money",
+      "categoryId": "cat_emergency_money",
+      "amount": -10000,
+      "details": "Added to savings account"
+    },
+    {
+      "date": "2026-01-22",
+      "effectiveDate": "2026-01-22",
+      "type": "savings",
+      "categoryName": "Holidays",
+      "categoryId": "cat_holidays",
+      "amount": -18000,
+      "details": "Added to Savings"
+    },
+    {
+      "date": "2026-01-22",
+      "effectiveDate": "2026-01-22",
+      "type": "savings",
+      "categoryName": "Factor Fee",
+      "categoryId": "cat_factor_fee",
+      "amount": -8300,
+      "details": "Added to Savings"
+    },
+    {
+      "date": "2026-01-22",
+      "effectiveDate": "2026-01-22",
+      "type": "expenses",
+      "categoryName": "Shopping",
+      "categoryId": "cat_shopping",
+      "amount": -1049,
+      "details": "Amazon - Plant"
+    },
+    {
+      "date": "2026-01-22",
+      "effectiveDate": "2026-01-22",
+      "type": "expenses",
+      "categoryName": "Chitra Payback",
+      "categoryId": "cat_chitra_payback",
+      "amount": -25000,
+      "details": "Chitra payback"
+    },
+    {
+      "date": "2026-02-02",
+      "effectiveDate": "2026-02-02",
+      "type": "expenses",
+      "categoryName": "Housing",
+      "categoryId": "cat_housing",
+      "amount": -84091,
+      "details": "Glasgow flat"
+    },
+    {
+      "date": "2026-02-02",
+      "effectiveDate": "2026-02-02",
+      "type": "expenses",
+      "categoryName": "Utilities",
+      "categoryId": "cat_utilities",
+      "amount": -10500,
+      "details": "Bike park leith"
+    },
+    {
+      "date": "2026-02-02",
+      "effectiveDate": "2026-02-02",
+      "type": "expenses",
+      "categoryName": "DigiSam Foundation",
+      "categoryId": "cat_digisam_foundation",
+      "amount": -8121,
+      "details": "Digisam"
+    },
+    {
+      "date": "2026-02-02",
+      "effectiveDate": "2026-02-02",
+      "type": "expenses",
+      "categoryName": "Taxes",
+      "categoryId": "cat_taxes",
+      "amount": -16400,
+      "details": "Edinburgh Council Tax"
+    },
+    {
+      "date": "2026-02-02",
+      "effectiveDate": "2026-02-02",
+      "type": "expenses",
+      "categoryName": "Health & Beauty",
+      "categoryId": "cat_health_and_beauty",
+      "amount": -5100,
+      "details": "Grange Cricket Club"
+    },
+    {
+      "date": "2026-02-02",
+      "effectiveDate": "2026-02-02",
+      "type": "expenses",
+      "categoryName": "Health & Beauty",
+      "categoryId": "cat_health_and_beauty",
+      "amount": -5999,
+      "details": "Gym"
+    },
+    {
+      "date": "2026-02-03",
+      "effectiveDate": "2026-02-03",
+      "type": "expenses",
+      "categoryName": "Groceries",
+      "categoryId": "cat_groceries",
+      "amount": -4209,
+      "details": "Groceries combined"
+    },
+    {
+      "date": "2026-02-04",
+      "effectiveDate": "2026-02-04",
+      "type": "expenses",
+      "categoryName": "Eating Out",
+      "categoryId": "cat_eating_out",
+      "amount": -3333,
+      "details": "Eating out combined"
+    },
+    {
+      "date": "2026-02-04",
+      "effectiveDate": "2026-02-04",
+      "type": "expenses",
+      "categoryName": "Transport",
+      "categoryId": "cat_transport",
+      "amount": -3197,
+      "details": "Transport combined"
+    },
+    {
+      "date": "2026-02-02",
+      "effectiveDate": "2026-02-02",
+      "type": "expenses",
+      "categoryName": "Utilities",
+      "categoryId": "cat_utilities",
+      "amount": -1332,
+      "details": "Countrywide Insurance"
+    },
+    {
+      "date": "2026-02-02",
+      "effectiveDate": "2026-02-02",
+      "type": "expenses",
+      "categoryName": "Utilities",
+      "categoryId": "cat_utilities",
+      "amount": -1495,
+      "details": "TV Licensing"
+    },
+    {
+      "date": "2026-02-09",
+      "effectiveDate": "2026-02-09",
+      "type": "expenses",
+      "categoryName": "Utilities",
+      "categoryId": "cat_utilities",
+      "amount": -6617,
+      "details": "Vodafone"
+    },
+    {
+      "date": "2026-02-10",
+      "effectiveDate": "2026-02-10",
+      "type": "expenses",
+      "categoryName": "Utilities",
+      "categoryId": "cat_utilities",
+      "amount": -1800,
+      "details": "claude"
+    },
+    {
+      "date": "2026-02-17",
+      "effectiveDate": "2026-02-17",
+      "type": "expenses",
+      "categoryName": "Utilities",
+      "categoryId": "cat_utilities",
+      "amount": -1199,
+      "details": "Apple"
+    },
+    {
+      "date": "2026-02-18",
+      "effectiveDate": "2026-02-18",
+      "type": "expenses",
+      "categoryName": "Utilities",
+      "categoryId": "cat_utilities",
+      "amount": -18275,
+      "details": "OVO energy"
+    },
+    {
+      "date": "2026-02-19",
+      "effectiveDate": "2026-02-19",
+      "type": "expenses",
+      "categoryName": "Eating Out",
+      "categoryId": "cat_eating_out",
+      "amount": -7700,
+      "details": "Eating out combined"
+    },
+    {
+      "date": "2026-02-19",
+      "effectiveDate": "2026-02-19",
+      "type": "expenses",
+      "categoryName": "Health & Beauty",
+      "categoryId": "cat_health_and_beauty",
+      "amount": -4300,
+      "details": "Health and Beauty combined"
+    },
+    {
+      "date": "2026-02-09",
+      "effectiveDate": "2026-02-09",
+      "type": "expenses",
+      "categoryName": "Entertainment",
+      "categoryId": "cat_entertainment",
+      "amount": -349,
+      "details": "prime amazon"
+    },
+    {
+      "date": "2026-02-15",
+      "effectiveDate": "2026-02-15",
+      "type": "expenses",
+      "categoryName": "Utilities",
+      "categoryId": "cat_utilities",
+      "amount": -1299,
+      "details": "Youtube premium"
+    },
+    {
+      "date": "2026-02-20",
+      "effectiveDate": "2026-02-20",
+      "type": "income",
+      "categoryName": "Employment (Net)",
+      "categoryId": "cat_employment_net",
+      "amount": 589656,
+      "details": "income"
+    },
+    {
+      "date": "2026-02-08",
+      "effectiveDate": "2026-02-08",
+      "type": "expenses",
+      "categoryName": "Shopping",
+      "categoryId": "cat_shopping",
+      "amount": -43000,
+      "details": "Kilt"
+    },
+    {
+      "date": "2026-02-11",
+      "effectiveDate": "2026-02-11",
+      "type": "expenses",
+      "categoryName": "General (One off)",
+      "categoryId": "cat_general_one_off",
+      "amount": -8670,
+      "details": "Visa application"
+    },
+    {
+      "date": "2026-02-16",
+      "effectiveDate": "2026-02-16",
+      "type": "expenses",
+      "categoryName": "General (One off)",
+      "categoryId": "cat_general_one_off",
+      "amount": -9500,
+      "details": "Citizenship consulting"
+    },
+    {
+      "date": "2026-02-22",
+      "effectiveDate": "2026-02-22",
+      "type": "expenses",
+      "categoryName": "Transport",
+      "categoryId": "cat_transport",
+      "amount": -6500,
+      "details": "Transport combined"
+    },
+    {
+      "date": "2026-02-22",
+      "effectiveDate": "2026-02-22",
+      "type": "expenses",
+      "categoryName": "Shopping",
+      "categoryId": "cat_shopping",
+      "amount": -2783,
+      "details": "Shopping combined"
+    },
+    {
+      "date": "2026-02-22",
+      "effectiveDate": "2026-02-22",
+      "type": "expenses",
+      "categoryName": "Entertainment",
+      "categoryId": "cat_entertainment",
+      "amount": -1349,
+      "details": "entertainment combined"
+    },
+    {
+      "date": "2026-02-22",
+      "effectiveDate": "2026-02-22",
+      "type": "expenses",
+      "categoryName": "Groceries",
+      "categoryId": "cat_groceries",
+      "amount": -9561,
+      "details": "Groceries combined"
+    },
+    {
+      "date": "2026-02-23",
+      "effectiveDate": "2026-02-23",
+      "type": "savings",
+      "categoryName": "Max life growth fund",
+      "categoryId": "cat_max_life_growth_fund",
+      "amount": -50000,
+      "details": "Max life growth saving added"
+    },
+    {
+      "date": "2026-02-23",
+      "effectiveDate": "2026-02-23",
+      "type": "savings",
+      "categoryName": "Emergency Money",
+      "categoryId": "cat_emergency_money",
+      "amount": -10000,
+      "details": "Emergency Money"
+    },
+    {
+      "date": "2026-02-23",
+      "effectiveDate": "2026-02-23",
+      "type": "savings",
+      "categoryName": "Holidays",
+      "categoryId": "cat_holidays",
+      "amount": -18000,
+      "details": "Holidays"
+    },
+    {
+      "date": "2026-02-23",
+      "effectiveDate": "2026-02-23",
+      "type": "savings",
+      "categoryName": "Factor Fee",
+      "categoryId": "cat_factor_fee",
+      "amount": -8300,
+      "details": "Factor Fee"
+    },
+    {
+      "date": "2026-02-02",
+      "effectiveDate": "2026-02-02",
+      "type": "savings",
+      "categoryName": "Retirement Investment",
+      "categoryId": "cat_retirement_investment",
+      "amount": -150000,
+      "details": "st james place"
+    },
+    {
+      "date": "2026-02-28",
+      "effectiveDate": "2026-02-28",
+      "type": "expenses",
+      "categoryName": "Eating Out",
+      "categoryId": "cat_eating_out",
+      "amount": -13100,
+      "details": "eating out combined"
+    },
+    {
+      "date": "2026-02-28",
+      "effectiveDate": "2026-02-28",
+      "type": "expenses",
+      "categoryName": "Utilities",
+      "categoryId": "cat_utilities",
+      "amount": -7117,
+      "details": "Utilities combined"
+    },
+    {
+      "date": "2026-02-24",
+      "effectiveDate": "2026-02-24",
+      "type": "expenses",
+      "categoryName": "Health & Beauty",
+      "categoryId": "cat_health_and_beauty",
+      "amount": -1400,
+      "details": "Alien Rock"
+    },
+    {
+      "date": "2026-02-28",
+      "effectiveDate": "2026-02-28",
+      "type": "expenses",
+      "categoryName": "Transport",
+      "categoryId": "cat_transport",
+      "amount": -1700,
+      "details": "Transport Rest of the month"
+    },
+    {
+      "date": "2026-02-23",
+      "effectiveDate": "2026-02-23",
+      "type": "expenses",
+      "categoryName": "Chitra Payback",
+      "categoryId": "cat_chitra_payback",
+      "amount": -25000,
+      "details": "Ghar Ki udhari"
+    },
+    {
+      "date": "2026-02-27",
+      "effectiveDate": "2026-02-27",
+      "type": "expenses",
+      "categoryName": "Finances",
+      "categoryId": "cat_finances",
+      "amount": -10900,
+      "details": "Santander bike finance"
+    },
+    {
+      "date": "2026-02-28",
+      "effectiveDate": "2026-02-28",
+      "type": "expenses",
+      "categoryName": "Groceries",
+      "categoryId": "cat_groceries",
+      "amount": -10100,
+      "details": "Groceries combined"
+    },
+    {
+      "date": "2026-02-28",
+      "effectiveDate": "2026-02-28",
+      "type": "expenses",
+      "categoryName": "Housing",
+      "categoryId": "cat_housing",
+      "amount": -125000,
+      "details": "flat rent"
+    },
+    {
+      "date": "2026-02-09",
+      "effectiveDate": "2026-02-09",
+      "type": "expenses",
+      "categoryName": "Taxes",
+      "categoryId": "cat_taxes",
+      "amount": -31700,
+      "details": "Factor Fee"
+    },
+    {
+      "date": "2026-02-28",
+      "effectiveDate": "2026-02-28",
+      "type": "expenses",
+      "categoryName": "Entertainment",
+      "categoryId": "cat_entertainment",
+      "amount": -2600,
+      "details": "entertainment combined"
+    },
+    {
+      "date": "2026-08-03",
+      "effectiveDate": "2026-08-03",
+      "type": "expenses",
+      "categoryName": "Taxes",
+      "categoryId": "cat_taxes",
+      "amount": -12700,
+      "details": "Edinburgh Council Tax"
+    },
+    {
+      "date": "2026-08-03",
+      "effectiveDate": "2026-08-03",
+      "type": "expenses",
+      "categoryName": "Health & Beauty",
+      "categoryId": "cat_health_and_beauty",
+      "amount": -5100,
+      "details": "Grange Cricket Club"
+    },
+    {
+      "date": "2026-08-03",
+      "effectiveDate": "2026-08-03",
+      "type": "expenses",
+      "categoryName": "Taxes",
+      "categoryId": "cat_taxes",
+      "amount": -1093,
+      "details": "Road Tax"
+    },
+    {
+      "date": "2026-08-03",
+      "effectiveDate": "2026-08-03",
+      "type": "expenses",
+      "categoryName": "Housing",
+      "categoryId": "cat_housing",
+      "amount": -84091,
+      "details": "Glasgow flat"
+    },
+    {
+      "date": "2026-08-03",
+      "effectiveDate": "2026-08-03",
+      "type": "expenses",
+      "categoryName": "Utilities",
+      "categoryId": "cat_utilities",
+      "amount": -10500,
+      "details": "Bike park leith"
+    },
+    {
+      "date": "2026-08-01",
+      "effectiveDate": "2026-08-01",
+      "type": "expenses",
+      "categoryName": "Transport",
+      "categoryId": "cat_transport",
+      "amount": -516,
+      "details": "Voi bikes"
+    },
+    {
+      "date": "2026-08-03",
+      "effectiveDate": "2026-08-03",
+      "type": "expenses",
+      "categoryName": "Transport",
+      "categoryId": "cat_transport",
+      "amount": -148,
+      "details": "Voi bikes"
+    },
+    {
+      "date": "2026-08-02",
+      "effectiveDate": "2026-08-02",
+      "type": "expenses",
+      "categoryName": "Groceries",
+      "categoryId": "cat_groceries",
+      "amount": -1180,
+      "details": "Groceries combined"
+    },
+    {
+      "date": "2026-08-04",
+      "effectiveDate": "2026-08-04",
+      "type": "expenses",
+      "categoryName": "Transport",
+      "categoryId": "cat_transport",
+      "amount": -148,
+      "details": "Voi bikes"
+    },
+    {
+      "date": "2026-08-04",
+      "effectiveDate": "2026-08-04",
+      "type": "expenses",
+      "categoryName": "Eating Out",
+      "categoryId": "cat_eating_out",
+      "amount": -140,
+      "details": "Office Snack"
+    },
+    {
+      "date": "2026-08-05",
+      "effectiveDate": "2026-08-05",
+      "type": "expenses",
+      "categoryName": "Utilities",
+      "categoryId": "cat_utilities",
+      "amount": -1150,
+      "details": "RAC Motering Insurance"
+    },
+    {
+      "date": "2026-08-05",
+      "effectiveDate": "2026-08-05",
+      "type": "income",
+      "categoryName": "Rent from Glasgow Flat",
+      "categoryId": "cat_rent_from_glasgow_flat",
+      "amount": 87560,
+      "details": "Glasgow rent"
+    },
+    {
+      "date": "2026-08-05",
+      "effectiveDate": "2026-08-05",
+      "type": "expenses",
+      "categoryName": "Eating Out",
+      "categoryId": "cat_eating_out",
+      "amount": -375,
+      "details": "Bar"
+    },
+    {
+      "date": "2026-08-05",
+      "effectiveDate": "2026-08-05",
+      "type": "expenses",
+      "categoryName": "Entertainment",
+      "categoryId": "cat_entertainment",
+      "amount": -3975,
+      "details": "Movie"
+    },
+    {
+      "date": "2026-08-05",
+      "effectiveDate": "2026-08-05",
+      "type": "expenses",
+      "categoryName": "Entertainment",
+      "categoryId": "cat_entertainment",
+      "amount": -1750,
+      "details": "Fringe"
+    },
+    {
+      "date": "2026-08-05",
+      "effectiveDate": "2026-08-05",
+      "type": "expenses",
+      "categoryName": "Transport",
+      "categoryId": "cat_transport",
+      "amount": -192,
+      "details": "Voi Bikes"
+    },
+    {
+      "date": "2026-08-06",
+      "effectiveDate": "2026-08-06",
+      "type": "expenses",
+      "categoryName": "Health & Beauty",
+      "categoryId": "cat_health_and_beauty",
+      "amount": -3499,
+      "details": "Pure Gym"
+    },
+    {
+      "date": "2026-08-03",
+      "effectiveDate": "2026-08-03",
+      "type": "expenses",
+      "categoryName": "Eating Out",
+      "categoryId": "cat_eating_out",
+      "amount": -1400,
+      "details": "Bar"
+    },
+    {
+      "date": "2026-08-03",
+      "effectiveDate": "2026-08-03",
+      "type": "expenses",
+      "categoryName": "Eating Out",
+      "categoryId": "cat_eating_out",
+      "amount": -556,
+      "details": "Food"
+    },
+    {
+      "date": "2026-08-06",
+      "effectiveDate": "2026-08-06",
+      "type": "savings",
+      "categoryName": "IKBR Stock Portfolio Contribution",
+      "categoryId": "cat_ikbr_stock_portfolio_contribution",
+      "amount": -10000,
+      "details": "IKBR"
+    },
+    {
+      "date": "2026-08-06",
+      "effectiveDate": "2026-08-06",
+      "type": "expenses",
+      "categoryName": "Entertainment",
+      "categoryId": "cat_entertainment",
+      "amount": -3300,
+      "details": "Fringe"
+    },
+    {
+      "date": "2026-08-07",
+      "effectiveDate": "2026-08-07",
+      "type": "expenses",
+      "categoryName": "Utilities",
+      "categoryId": "cat_utilities",
+      "amount": -7243,
+      "details": "Vodafone"
+    },
+    {
+      "date": "2026-08-07",
+      "effectiveDate": "2026-08-07",
+      "type": "expenses",
+      "categoryName": "Eating Out",
+      "categoryId": "cat_eating_out",
+      "amount": -800,
+      "details": "Office Snack"
+    },
+    {
+      "date": "2026-08-04",
+      "effectiveDate": "2026-08-04",
+      "type": "expenses",
+      "categoryName": "Eating Out",
+      "categoryId": "cat_eating_out",
+      "amount": -556,
+      "details": "Food"
+    },
+    {
+      "date": "2026-08-05",
+      "effectiveDate": "2026-08-05",
+      "type": "expenses",
+      "categoryName": "Eating Out",
+      "categoryId": "cat_eating_out",
+      "amount": -675,
+      "details": "Food"
+    },
+    {
+      "date": "2026-08-07",
+      "effectiveDate": "2026-08-07",
+      "type": "expenses",
+      "categoryName": "Groceries",
+      "categoryId": "cat_groceries",
+      "amount": -820,
+      "details": "Angi"
+    },
+    {
+      "date": "2026-08-07",
+      "effectiveDate": "2026-08-07",
+      "type": "expenses",
+      "categoryName": "Eating Out",
+      "categoryId": "cat_eating_out",
+      "amount": -380,
+      "details": "Food"
+    },
+    {
+      "date": "2026-08-08",
+      "effectiveDate": "2026-08-08",
+      "type": "expenses",
+      "categoryName": "Shopping",
+      "categoryId": "cat_shopping",
+      "amount": -2499,
+      "details": "Decathlon"
+    },
+    {
+      "date": "2026-08-08",
+      "effectiveDate": "2026-08-08",
+      "type": "expenses",
+      "categoryName": "Groceries",
+      "categoryId": "cat_groceries",
+      "amount": -950,
+      "details": "Lidl"
+    },
+    {
+      "date": "2026-08-09",
+      "effectiveDate": "2026-08-09",
+      "type": "expenses",
+      "categoryName": "Shopping",
+      "categoryId": "cat_shopping",
+      "amount": -880,
+      "details": "Coffee Beans"
+    },
+    {
+      "date": "2026-08-10",
+      "effectiveDate": "2026-08-10",
+      "type": "expenses",
+      "categoryName": "Eating Out",
+      "categoryId": "cat_eating_out",
+      "amount": -300,
+      "details": "Office Snack"
+    },
+    {
+      "date": "2026-08-10",
+      "effectiveDate": "2026-08-10",
+      "type": "expenses",
+      "categoryName": "Utilities",
+      "categoryId": "cat_utilities",
+      "amount": -8000,
+      "details": "Piano lesson"
+    },
+    {
+      "date": "2026-08-12",
+      "effectiveDate": "2026-08-12",
+      "type": "expenses",
+      "categoryName": "Shopping",
+      "categoryId": "cat_shopping",
+      "amount": -8215,
+      "details": "Amazon shopping"
+    },
+    {
+      "date": "2026-08-12",
+      "effectiveDate": "2026-08-12",
+      "type": "expenses",
+      "categoryName": "Transport",
+      "categoryId": "cat_transport",
+      "amount": -565,
+      "details": "Voi bikes"
+    },
+    {
+      "date": "2026-08-13",
+      "effectiveDate": "2026-08-13",
+      "type": "expenses",
+      "categoryName": "Eating Out",
+      "categoryId": "cat_eating_out",
+      "amount": -2210,
+      "details": "Petra"
+    },
+    {
+      "date": "2026-08-13",
+      "effectiveDate": "2026-08-13",
+      "type": "expenses",
+      "categoryName": "Transport",
+      "categoryId": "cat_transport",
+      "amount": -126,
+      "details": "Voi bikes"
+    },
+    {
+      "date": "2026-08-14",
+      "effectiveDate": "2026-08-14",
+      "type": "expenses",
+      "categoryName": "Transport",
+      "categoryId": "cat_transport",
+      "amount": -192,
+      "details": "Voi bikes"
+    },
+    {
+      "date": "2026-08-15",
+      "effectiveDate": "2026-08-15",
+      "type": "expenses",
+      "categoryName": "Shopping",
+      "categoryId": "cat_shopping",
+      "amount": -8000,
+      "details": "Watch"
+    },
+    {
+      "date": "2026-08-17",
+      "effectiveDate": "2026-08-17",
+      "type": "expenses",
+      "categoryName": "Transport",
+      "categoryId": "cat_transport",
+      "amount": -302,
+      "details": "Voi bikes"
+    },
+    {
+      "date": "2026-08-17",
+      "effectiveDate": "2026-08-17",
+      "type": "expenses",
+      "categoryName": "Eating Out",
+      "categoryId": "cat_eating_out",
+      "amount": -3685,
+      "details": "Deliveroo"
+    },
+    {
+      "date": "2026-08-10",
+      "effectiveDate": "2026-08-10",
+      "type": "expenses",
+      "categoryName": "Utilities",
+      "categoryId": "cat_utilities",
+      "amount": -899,
+      "details": "Amazon Prime"
+    },
+    {
+      "date": "2026-08-10",
+      "effectiveDate": "2026-08-10",
+      "type": "expenses",
+      "categoryName": "Groceries",
+      "categoryId": "cat_groceries",
+      "amount": -660,
+      "details": "Tesco visit"
+    },
+    {
+      "date": "2026-08-11",
+      "effectiveDate": "2026-08-11",
+      "type": "expenses",
+      "categoryName": "Groceries",
+      "categoryId": "cat_groceries",
+      "amount": -170,
+      "details": "Day today"
+    },
+    {
+      "date": "2026-08-11",
+      "effectiveDate": "2026-08-11",
+      "type": "expenses",
+      "categoryName": "Eating Out",
+      "categoryId": "cat_eating_out",
+      "amount": -305,
+      "details": "Office snack"
+    },
+    {
+      "date": "2026-08-12",
+      "effectiveDate": "2026-08-12",
+      "type": "expenses",
+      "categoryName": "Eating Out",
+      "categoryId": "cat_eating_out",
+      "amount": -638,
+      "details": "Lunch"
+    },
+    {
+      "date": "2026-08-13",
+      "effectiveDate": "2026-08-13",
+      "type": "expenses",
+      "categoryName": "Groceries",
+      "categoryId": "cat_groceries",
+      "amount": -360,
+      "details": "Margiota"
+    },
+    {
+      "date": "2026-08-14",
+      "effectiveDate": "2026-08-14",
+      "type": "expenses",
+      "categoryName": "Groceries",
+      "categoryId": "cat_groceries",
+      "amount": -96,
+      "details": "Aldi"
+    },
+    {
+      "date": "2026-08-15",
+      "effectiveDate": "2026-08-15",
+      "type": "expenses",
+      "categoryName": "Transport",
+      "categoryId": "cat_transport",
+      "amount": -1557,
+      "details": "Fuel"
+    },
+    {
+      "date": "2026-08-15",
+      "effectiveDate": "2026-08-15",
+      "type": "expenses",
+      "categoryName": "Groceries",
+      "categoryId": "cat_groceries",
+      "amount": -235,
+      "details": "Tesco"
+    },
+    {
+      "date": "2026-08-15",
+      "effectiveDate": "2026-08-15",
+      "type": "expenses",
+      "categoryName": "Finances",
+      "categoryId": "cat_finances",
+      "amount": -5347,
+      "details": "Amex"
+    },
+    {
+      "date": "2026-08-16",
+      "effectiveDate": "2026-08-16",
+      "type": "expenses",
+      "categoryName": "Eating Out",
+      "categoryId": "cat_eating_out",
+      "amount": -1856,
+      "details": "Sarvanna bhavan"
+    },
+    {
+      "date": "2026-08-17",
+      "effectiveDate": "2026-08-17",
+      "type": "expenses",
+      "categoryName": "Utilities",
+      "categoryId": "cat_utilities",
+      "amount": -1199,
+      "details": "Apple Subscription"
+    },
+    {
+      "date": "2026-08-20",
+      "effectiveDate": "2026-08-20",
+      "type": "expenses",
+      "categoryName": "Transport",
+      "categoryId": "cat_transport",
+      "amount": -170,
+      "details": "Voi"
+    },
+    {
+      "date": "2026-08-20",
+      "effectiveDate": "2026-08-20",
+      "type": "expenses",
+      "categoryName": "Eating Out",
+      "categoryId": "cat_eating_out",
+      "amount": -260,
+      "details": "Blackrock lunch"
+    },
+    {
+      "date": "2026-08-20",
+      "effectiveDate": "2026-08-20",
+      "type": "income",
+      "categoryName": "Employment (Net)",
+      "categoryId": "cat_employment_net",
+      "amount": 557916,
+      "details": "Income"
+    },
+    {
+      "date": "2026-08-21",
+      "effectiveDate": "2026-08-21",
+      "type": "expenses",
+      "categoryName": "Utilities",
+      "categoryId": "cat_utilities",
+      "amount": -899,
+      "details": "Prime"
+    },
+    {
+      "date": "2026-08-21",
+      "effectiveDate": "2026-08-21",
+      "type": "expenses",
+      "categoryName": "Transport",
+      "categoryId": "cat_transport",
+      "amount": -170,
+      "details": "Voi"
+    },
+    {
+      "date": "2026-08-21",
+      "effectiveDate": "2026-08-21",
+      "type": "expenses",
+      "categoryName": "General (One off)",
+      "categoryId": "cat_general_one_off",
+      "amount": -3170,
+      "details": "Gift for gilian"
+    },
+    {
+      "date": "2026-08-24",
+      "effectiveDate": "2026-08-24",
+      "type": "savings",
+      "categoryName": "Emergency Money",
+      "categoryId": "cat_emergency_money",
+      "amount": -10000,
+      "details": ""
+    },
+    {
+      "date": "2026-08-24",
+      "effectiveDate": "2026-08-24",
+      "type": "savings",
+      "categoryName": "Max life growth fund",
+      "categoryId": "cat_max_life_growth_fund",
+      "amount": -50000,
+      "details": ""
+    },
+    {
+      "date": "2026-08-24",
+      "effectiveDate": "2026-08-24",
+      "type": "savings",
+      "categoryName": "Holidays",
+      "categoryId": "cat_holidays",
+      "amount": -18000,
+      "details": ""
+    },
+    {
+      "date": "2026-08-24",
+      "effectiveDate": "2026-08-24",
+      "type": "savings",
+      "categoryName": "Factor Fee",
+      "categoryId": "cat_factor_fee",
+      "amount": -8300,
+      "details": ""
+    },
+    {
+      "date": "2026-08-24",
+      "effectiveDate": "2026-08-24",
+      "type": "expenses",
+      "categoryName": "Chitra Payback",
+      "categoryId": "cat_chitra_payback",
+      "amount": -25000,
+      "details": "Charu Ki kist"
+    },
+    {
+      "date": "2026-08-24",
+      "effectiveDate": "2026-08-24",
+      "type": "expenses",
+      "categoryName": "Eating Out",
+      "categoryId": "cat_eating_out",
+      "amount": -430,
+      "details": "Office Lunch"
+    },
+    {
+      "date": "2026-08-24",
+      "effectiveDate": "2026-08-24",
+      "type": "expenses",
+      "categoryName": "Transport",
+      "categoryId": "cat_transport",
+      "amount": -477,
+      "details": "Voi"
+    },
+    {
+      "date": "2026-08-18",
+      "effectiveDate": "2026-08-18",
+      "type": "expenses",
+      "categoryName": "Eating Out",
+      "categoryId": "cat_eating_out",
+      "amount": -359,
+      "details": "Edinburgh Lunch"
+    },
+    {
+      "date": "2026-08-18",
+      "effectiveDate": "2026-08-18",
+      "type": "expenses",
+      "categoryName": "Transport",
+      "categoryId": "cat_transport",
+      "amount": -1603,
+      "details": "Petrol"
+    },
+    {
+      "date": "2026-08-18",
+      "effectiveDate": "2026-08-18",
+      "type": "expenses",
+      "categoryName": "Utilities",
+      "categoryId": "cat_utilities",
+      "amount": -1199,
+      "details": "Google subscription"
+    },
+    {
+      "date": "2026-08-19",
+      "effectiveDate": "2026-08-19",
+      "type": "expenses",
+      "categoryName": "Groceries",
+      "categoryId": "cat_groceries",
+      "amount": -806,
+      "details": "Tesco"
+    },
+    {
+      "date": "2026-08-19",
+      "effectiveDate": "2026-08-19",
+      "type": "expenses",
+      "categoryName": "Utilities",
+      "categoryId": "cat_utilities",
+      "amount": -499,
+      "details": "Prime Bill"
+    },
+    {
+      "date": "2026-08-19",
+      "effectiveDate": "2026-08-19",
+      "type": "expenses",
+      "categoryName": "Eating Out",
+      "categoryId": "cat_eating_out",
+      "amount": -496,
+      "details": "Lunch"
+    },
+    {
+      "date": "2026-08-20",
+      "effectiveDate": "2026-08-20",
+      "type": "expenses",
+      "categoryName": "Groceries",
+      "categoryId": "cat_groceries",
+      "amount": -925,
+      "details": "Groceries"
+    },
+    {
+      "date": "2026-08-20",
+      "effectiveDate": "2026-08-20",
+      "type": "expenses",
+      "categoryName": "Eating Out",
+      "categoryId": "cat_eating_out",
+      "amount": -315,
+      "details": "Office snack"
+    },
+    {
+      "date": "2026-08-21",
+      "effectiveDate": "2026-08-21",
+      "type": "expenses",
+      "categoryName": "Eating Out",
+      "categoryId": "cat_eating_out",
+      "amount": -389,
+      "details": "Office snack"
+    },
+    {
+      "date": "2026-08-26",
+      "effectiveDate": "2026-08-26",
+      "type": "expenses",
+      "categoryName": "Entertainment",
+      "categoryId": "cat_entertainment",
+      "amount": -4100,
+      "details": "Fringe show"
+    },
+    {
+      "date": "2026-08-27",
+      "effectiveDate": "2026-08-27",
+      "type": "expenses",
+      "categoryName": "Finances",
+      "categoryId": "cat_finances",
+      "amount": -10900,
+      "details": "Santander"
+    },
+    {
+      "date": "2026-08-27",
+      "effectiveDate": "2026-08-27",
+      "type": "expenses",
+      "categoryName": "Eating Out",
+      "categoryId": "cat_eating_out",
+      "amount": -210,
+      "details": "Greggs"
+    },
+    {
+      "date": "2026-08-27",
+      "effectiveDate": "2026-08-27",
+      "type": "expenses",
+      "categoryName": "Eating Out",
+      "categoryId": "cat_eating_out",
+      "amount": -310,
+      "details": "Office lunch"
+    },
+    {
+      "date": "2026-08-28",
+      "effectiveDate": "2026-08-28",
+      "type": "savings",
+      "categoryName": "Retirement Investment",
+      "categoryId": "cat_retirement_investment",
+      "amount": -150000,
+      "details": "SJP"
+    },
+    {
+      "date": "2026-08-28",
+      "effectiveDate": "2026-08-28",
+      "type": "expenses",
+      "categoryName": "Utilities",
+      "categoryId": "cat_utilities",
+      "amount": -3700,
+      "details": "OVO"
+    },
+    {
+      "date": "2026-08-28",
+      "effectiveDate": "2026-08-28",
+      "type": "expenses",
+      "categoryName": "Housing",
+      "categoryId": "cat_housing",
+      "amount": -125000,
+      "details": "Edinburgh rent"
+    },
+    {
+      "date": "2026-08-28",
+      "effectiveDate": "2026-08-28",
+      "type": "expenses",
+      "categoryName": "Entertainment",
+      "categoryId": "cat_entertainment",
+      "amount": -700,
+      "details": "Pleasance"
+    },
+    {
+      "date": "2026-08-28",
+      "effectiveDate": "2026-08-28",
+      "type": "expenses",
+      "categoryName": "Groceries",
+      "categoryId": "cat_groceries",
+      "amount": -1048,
+      "details": "rehman supermarket"
+    },
+    {
+      "date": "2026-08-23",
+      "effectiveDate": "2026-08-23",
+      "type": "expenses",
+      "categoryName": "Groceries",
+      "categoryId": "cat_groceries",
+      "amount": -9213,
+      "details": "ASDA"
+    },
+    {
+      "date": "2026-09-24",
+      "effectiveDate": "2026-09-24",
+      "type": "expenses",
+      "categoryName": "Eating Out",
+      "categoryId": "cat_eating_out",
+      "amount": -129,
+      "details": "Energy drink"
+    },
+    {
+      "date": "2026-08-24",
+      "effectiveDate": "2026-08-24",
+      "type": "expenses",
+      "categoryName": "Utilities",
+      "categoryId": "cat_utilities",
+      "amount": -599,
+      "details": "snoop"
+    },
+    {
+      "date": "2026-08-25",
+      "effectiveDate": "2026-08-25",
+      "type": "expenses",
+      "categoryName": "Utilities",
+      "categoryId": "cat_utilities",
+      "amount": -1299,
+      "details": "spotify"
+    },
+    {
+      "date": "2026-08-26",
+      "effectiveDate": "2026-08-26",
+      "type": "expenses",
+      "categoryName": "Eating Out",
+      "categoryId": "cat_eating_out",
+      "amount": -1250,
+      "details": "Pizza"
+    },
+    {
+      "date": "2026-08-26",
+      "effectiveDate": "2026-08-26",
+      "type": "expenses",
+      "categoryName": "Utilities",
+      "categoryId": "cat_utilities",
+      "amount": -1899,
+      "details": "Google one"
+    },
+    {
+      "date": "2026-08-26",
+      "effectiveDate": "2026-08-26",
+      "type": "expenses",
+      "categoryName": "Eating Out",
+      "categoryId": "cat_eating_out",
+      "amount": -160,
+      "details": "Office Snack"
+    },
+    {
+      "date": "2026-08-27",
+      "effectiveDate": "2026-08-27",
+      "type": "expenses",
+      "categoryName": "Groceries",
+      "categoryId": "cat_groceries",
+      "amount": -2169,
+      "details": "Tesco Run"
+    },
+    {
+      "date": "2026-08-28",
+      "effectiveDate": "2026-08-28",
+      "type": "expenses",
+      "categoryName": "Eating Out",
+      "categoryId": "cat_eating_out",
+      "amount": -1150,
+      "details": "Breakfast"
+    },
+    {
+      "date": "2026-08-28",
+      "effectiveDate": "2026-08-28",
+      "type": "expenses",
+      "categoryName": "Utilities",
+      "categoryId": "cat_utilities",
+      "amount": -2999,
+      "details": "Apple bill"
+    },
+    {
+      "date": "2026-08-29",
+      "effectiveDate": "2026-08-29",
+      "type": "expenses",
+      "categoryName": "Groceries",
+      "categoryId": "cat_groceries",
+      "amount": -2808,
+      "details": "Sainsbury"
+    },
+    {
+      "date": "2026-08-30",
+      "effectiveDate": "2026-08-30",
+      "type": "expenses",
+      "categoryName": "General (One off)",
+      "categoryId": "cat_general_one_off",
+      "amount": -2400,
+      "details": "Gift for sister"
+    },
+    {
+      "date": "2026-08-31",
+      "effectiveDate": "2026-08-31",
+      "type": "expenses",
+      "categoryName": "Eating Out",
+      "categoryId": "cat_eating_out",
+      "amount": -1420,
+      "details": "Coffee"
+    },
+    {
+      "date": "2026-08-31",
+      "effectiveDate": "2026-08-31",
+      "type": "expenses",
+      "categoryName": "Groceries",
+      "categoryId": "cat_groceries",
+      "amount": -1389,
+      "details": "Holland & barrett"
+    },
+    {
+      "date": "2026-09-01",
+      "effectiveDate": "2026-09-01",
+      "type": "expenses",
+      "categoryName": "Health & Beauty",
+      "categoryId": "cat_health_and_beauty",
+      "amount": -5100,
+      "details": "Grange Cricket"
+    },
+    {
+      "date": "2026-09-01",
+      "effectiveDate": "2026-09-01",
+      "type": "expenses",
+      "categoryName": "Taxes",
+      "categoryId": "cat_taxes",
+      "amount": -1093,
+      "details": "DVLA"
+    },
+    {
+      "date": "2026-09-01",
+      "effectiveDate": "2026-09-01",
+      "type": "expenses",
+      "categoryName": "Utilities",
+      "categoryId": "cat_utilities",
+      "amount": -1332,
+      "details": "Property Insurance"
+    },
+    {
+      "date": "2026-09-01",
+      "effectiveDate": "2026-09-01",
+      "type": "expenses",
+      "categoryName": "Utilities",
+      "categoryId": "cat_utilities",
+      "amount": -1545,
+      "details": "TV lisence"
+    },
+    {
+      "date": "2026-09-01",
+      "effectiveDate": "2026-09-01",
+      "type": "expenses",
+      "categoryName": "Housing",
+      "categoryId": "cat_housing",
+      "amount": -84091,
+      "details": "Glasgow Installment"
+    },
+    {
+      "date": "2026-09-01",
+      "effectiveDate": "2026-09-01",
+      "type": "expenses",
+      "categoryName": "Taxes",
+      "categoryId": "cat_taxes",
+      "amount": -12700,
+      "details": "Edinburgh Council"
+    },
+    {
+      "date": "2026-09-01",
+      "effectiveDate": "2026-09-01",
+      "type": "expenses",
+      "categoryName": "Utilities",
+      "categoryId": "cat_utilities",
+      "amount": -10500,
+      "details": "Bike park leith"
+    },
+    {
+      "date": "2026-09-01",
+      "effectiveDate": "2026-09-01",
+      "type": "expenses",
+      "categoryName": "Health & Beauty",
+      "categoryId": "cat_health_and_beauty",
+      "amount": -800,
+      "details": "Football"
+    },
+    {
+      "date": "2026-09-01",
+      "effectiveDate": "2026-09-01",
+      "type": "expenses",
+      "categoryName": "Shopping",
+      "categoryId": "cat_shopping",
+      "amount": -1200,
+      "details": "Shopping"
+    },
+    {
+      "date": "2026-09-01",
+      "effectiveDate": "2026-09-01",
+      "type": "expenses",
+      "categoryName": "Eating Out",
+      "categoryId": "cat_eating_out",
+      "amount": -547,
+      "details": "BLk Lunch"
+    }
+  ]
+}
