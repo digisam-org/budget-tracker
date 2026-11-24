@@ -32,9 +32,43 @@ export function ReviewQueueClient({
   const [customMerchant, setCustomMerchant] = useState<string>('');
   const [saveAsRule, setSaveAsRule] = useState<boolean>(true);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [isClassifyingAll, setIsClassifyingAll] = useState<boolean>(false);
+  const [aiStatusBanner, setAiStatusBanner] = useState<string | null>(null);
   const [splittingTx, setSplittingTx] = useState<Transaction | null>(null);
 
   const currentItem = items[currentIndex];
+
+  const handleSmartClassifyAll = async () => {
+    if (items.length === 0) return;
+    setIsClassifyingAll(true);
+    setAiStatusBanner(null);
+
+    try {
+      const res = await fetch('/api/classify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ classifyPendingInDb: true }),
+      });
+      const data = await res.json();
+      if (data.success && Array.isArray(data.updatedTransactions)) {
+        const remainingPending = (data.updatedTransactions as Transaction[]).filter(
+          (tx) => tx.status === 'pending'
+        );
+
+        setItems(remainingPending);
+        setCurrentIndex(0);
+        setSelectedCategory('');
+        setCustomMerchant('');
+        setAiStatusBanner(
+          `AI classified ${data.processedCount} items (${data.autoReviewedCount} high-confidence items auto-approved!)`
+        );
+      }
+    } catch (err) {
+      console.error('Smart classify error:', err);
+    } finally {
+      setIsClassifyingAll(false);
+    }
+  };
 
   const advanceQueue = (removedId: string) => {
     const remaining = items.filter((t) => t.id !== removedId);
@@ -143,18 +177,53 @@ export function ReviewQueueClient({
       ? (currentItem.metadata as Record<string, unknown>)
       : {};
   const isTransferCandidate = Boolean(meta.isTransferCandidate);
+  const aiReasoning =
+    typeof meta.aiReasoning === 'string' ? meta.aiReasoning : null;
+  const classificationSource =
+    typeof meta.classificationSource === 'string'
+      ? meta.classificationSource
+      : null;
 
   return (
     <div className="space-y-4">
-      {/* Progress pill */}
+      {/* Progress pill + Smart AI Classify Button */}
       <div className="flex items-center justify-between text-xs text-zinc-400 px-1">
         <span>
-          Item {currentIndex + 1} of {items.length}
+          Item {currentIndex + 1} of {items.length}{' '}
+          <span className="text-zinc-500">({items.length} remaining)</span>
         </span>
-        <span className="font-semibold text-emerald-400">
-          {items.length} remaining
-        </span>
+        <button
+          type="button"
+          onClick={handleSmartClassifyAll}
+          disabled={isClassifyingAll}
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 border border-emerald-500/30 font-semibold text-[11px] transition-colors disabled:opacity-50"
+        >
+          {isClassifyingAll ? (
+            <>
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              <span>Classifying Queue...</span>
+            </>
+          ) : (
+            <>
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Smart AI Classify All</span>
+            </>
+          )}
+        </button>
       </div>
+
+      {aiStatusBanner && (
+        <div className="px-3.5 py-2.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-xs text-emerald-300 flex items-center justify-between">
+          <span>✨ {aiStatusBanner}</span>
+          <button
+            type="button"
+            onClick={() => setAiStatusBanner(null)}
+            className="text-emerald-400/70 hover:text-emerald-300 text-[11px] ml-2"
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
 
       {/* Primary Review Card */}
       <div className="p-6 rounded-3xl bg-zinc-900 border border-zinc-800/90 shadow-2xl space-y-5">
@@ -196,22 +265,50 @@ export function ReviewQueueClient({
           </span>
         </div>
 
-        {/* Suggested Category Badge */}
-        <div className="p-3 rounded-2xl bg-zinc-950/80 border border-zinc-800 flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-400">
-              <Sparkles className="w-4 h-4" />
+        {/* Suggested Category Badge + AI Confidence & Reasoning */}
+        <div className="p-3.5 rounded-2xl bg-zinc-950/80 border border-zinc-800 space-y-2">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-400">
+                <Sparkles className="w-4 h-4" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <p className="text-[11px] text-zinc-400">Assigned Category</p>
+                  {typeof currentItem.confidenceScore === 'number' &&
+                    currentItem.confidenceScore > 0 && (
+                      <span
+                        className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-md ${
+                          currentItem.confidenceScore >= 85
+                            ? 'bg-emerald-500/15 text-emerald-400'
+                            : 'bg-amber-500/15 text-amber-400'
+                        }`}
+                      >
+                        {currentItem.confidenceScore}%{' '}
+                        {classificationSource === 'gemini_llm' ||
+                        classificationSource === 'openai_llm'
+                          ? 'AI'
+                          : classificationSource === 'rule'
+                          ? 'Rule'
+                          : 'Smart Match'}
+                      </span>
+                    )}
+                </div>
+                <p className="text-sm font-semibold text-emerald-300">
+                  {currentCat?.name || 'Select a category below'}
+                </p>
+              </div>
             </div>
-            <div>
-              <p className="text-[11px] text-zinc-400">Assigned Category</p>
-              <p className="text-sm font-semibold text-emerald-300">
-                {currentCat?.name || 'Select a category below'}
-              </p>
-            </div>
+            <span className="text-[11px] text-zinc-500 uppercase tracking-wider">
+              {currentCat?.type || currentItem.type}
+            </span>
           </div>
-          <span className="text-[11px] text-zinc-500 uppercase tracking-wider">
-            {currentCat?.type || currentItem.type}
-          </span>
+
+          {aiReasoning && (
+            <p className="text-[11px] text-zinc-400 pl-10 border-t border-zinc-900 pt-1.5">
+              💡 <span className="text-zinc-300">{aiReasoning}</span>
+            </p>
+          )}
         </div>
 
         {/* Quick Category Chips Selector */}

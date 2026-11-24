@@ -16,6 +16,10 @@ import { generateFingerprint } from '@/lib/ingestion/fingerprint';
 import { matchRule } from '@/lib/classifier/rules-engine';
 import { findTransferPairs } from '@/lib/classifier/transfer-matcher';
 import {
+  classifyTransactionsBatchWithLLM,
+  ClassificationInputItem,
+} from '@/lib/classifier/llm-classifier';
+import {
   extractTransactionsWithGeminiVision,
   parseBankScreenshotText,
 } from '@/lib/ingestion/screenshot-parser';
@@ -31,6 +35,8 @@ export interface StagedPreviewRow {
   cleanMerchant: string;
   categoryId: string | null;
   confidenceScore: number;
+  aiReasoning?: string;
+  classificationSource?: 'rule' | 'gemini_llm' | 'openai_llm' | 'smart_heuristic';
   isDuplicate: boolean;
   isTransferCandidate: boolean;
   transferMatchedAccountId?: string;
@@ -292,6 +298,7 @@ export async function POST(req: NextRequest) {
 
     // Prepare staged rows with rule matching and deduplication check
     const stagedRows: StagedPreviewRow[] = [];
+    const unmatchedBatch: ClassificationInputItem[] = [];
     const batchId = `batch_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
 
     for (let i = 0; i < normalizedList.length; i++) {
@@ -309,6 +316,14 @@ export async function POST(req: NextRequest) {
 
       const ruleMatch = matchRule(normalized.rawDescription, existingRules);
       const matchedCat = ruleMatch ? catMap.get(ruleMatch.categoryId) : null;
+
+      if (!ruleMatch) {
+        unmatchedBatch.push({
+          index: i,
+          rawDescription: normalized.rawDescription,
+          amount: normalized.amount,
+        });
+      }
 
       const txType: 'income' | 'expenses' | 'savings' =
         normalized.amount > 0
@@ -337,10 +352,43 @@ export async function POST(req: NextRequest) {
           normalized.rawDescription,
         categoryId: ruleMatch ? ruleMatch.categoryId : null,
         confidenceScore: ruleMatch ? ruleMatch.confidence : transferMatchedAcc ? 92 : 0,
+        aiReasoning: ruleMatch ? 'Matched learned merchant rule' : undefined,
+        classificationSource: ruleMatch ? 'rule' : undefined,
         isDuplicate,
         isTransferCandidate: Boolean(transferMatchedAcc),
         transferMatchedAccountId: transferMatchedAcc,
       });
+    }
+
+    // Run LLM + Smart Heuristic Fallback on all rows not matched by deterministic rules
+    if (unmatchedBatch.length > 0) {
+      const aiResults = await classifyTransactionsBatchWithLLM({
+        items: unmatchedBatch,
+        categories: existingCategories,
+        existingRules,
+      });
+
+      const aiMap = new Map(aiResults.map((r) => [`staged_${r.index}`, r]));
+
+      for (const row of stagedRows) {
+        const ai = aiMap.get(row.tempId);
+        if (!ai) continue;
+
+        row.cleanMerchant = ai.cleanMerchant || row.cleanMerchant;
+        row.categoryId = ai.categoryId;
+        row.confidenceScore = row.isTransferCandidate
+          ? Math.max(92, ai.confidence)
+          : ai.confidence;
+        row.aiReasoning = ai.reasoning;
+        row.classificationSource = ai.source;
+
+        const aiCat = ai.categoryId ? catMap.get(ai.categoryId) : null;
+        if (aiCat?.type === 'savings') {
+          row.type = 'savings';
+        } else if (aiCat?.type === 'income' && row.amount > 0) {
+          row.type = 'income';
+        }
+      }
     }
 
     // If preview mode requested, return staged rows without inserting into DB yet
@@ -400,6 +448,8 @@ export async function POST(req: NextRequest) {
             metadata: {
               isTransferCandidate: row.isTransferCandidate,
               transferMatchedAccountId: row.transferMatchedAccountId || null,
+              aiReasoning: row.aiReasoning || null,
+              classificationSource: row.classificationSource || null,
             },
           })
           .onConflictDoNothing({ target: transactions.fingerprint })

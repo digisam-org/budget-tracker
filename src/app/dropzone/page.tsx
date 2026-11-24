@@ -41,6 +41,9 @@ interface StagedRowUI {
   rawDescription: string;
   cleanMerchant: string;
   categoryId: string;
+  confidenceScore?: number;
+  aiReasoning?: string;
+  classificationSource?: string;
   isDuplicate: boolean;
   isTransferCandidate: boolean;
 }
@@ -130,6 +133,9 @@ export default function DropzonePage() {
       rawDescription: r.rawDescription || '',
       cleanMerchant: r.cleanMerchant || r.rawDescription || '',
       categoryId: r.categoryId || '',
+      confidenceScore: typeof r.confidenceScore === 'number' ? r.confidenceScore : undefined,
+      aiReasoning: r.aiReasoning,
+      classificationSource: r.classificationSource,
       isDuplicate: Boolean(r.isDuplicate),
       isTransferCandidate: Boolean(r.isTransferCandidate),
     }));
@@ -566,6 +572,24 @@ export default function DropzonePage() {
                   </label>
 
                   <div className="flex items-center gap-1.5">
+                    {typeof row.confidenceScore === 'number' && row.confidenceScore > 0 && (
+                      <span
+                        className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${
+                          row.confidenceScore >= 85
+                            ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30'
+                            : 'bg-amber-500/15 text-amber-400 border-amber-500/30'
+                        }`}
+                        title={row.aiReasoning || 'AI confidence score'}
+                      >
+                        {row.confidenceScore}%{' '}
+                        {row.classificationSource === 'rule'
+                          ? 'Rule'
+                          : row.classificationSource === 'gemini_llm' ||
+                            row.classificationSource === 'openai_llm'
+                          ? 'AI'
+                          : 'Smart'}
+                      </span>
+                    )}
                     {row.isDuplicate && (
                       <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-400 border border-amber-500/30">
                         Duplicate (Skipped)
@@ -656,6 +680,12 @@ export default function DropzonePage() {
                     </option>
                   ))}
                 </select>
+
+                {row.aiReasoning && (
+                  <p className="text-[10px] text-zinc-500 px-1">
+                    💡 {row.aiReasoning}
+                  </p>
+                )}
               </div>
             ))}
           </div>
