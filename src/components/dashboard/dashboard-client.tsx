@@ -1,30 +1,37 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import Link from 'next/link';
-import { 
-  Category, 
-  BudgetPlan, 
-  Transaction, 
-  Account, 
-  AppSettings 
+import {
+  Category,
+  BudgetPlan,
+  Transaction,
+  Account,
+  AppSettings,
 } from '@/lib/db/schema';
-import { calculateMonthlyBudget } from '@/lib/budget/calculator';
+import {
+  calculateMonthlyBudget,
+  calculateYearlyCashflowSeries,
+  calculatePacingMetrics,
+} from '@/lib/budget/calculator';
 import { formatCurrency } from '@/lib/utils';
-import { 
-  ArrowUpRight, 
-  ArrowDownLeft, 
-  PiggyBank, 
-  Layers, 
-  UploadCloud, 
+import { PacingBurnMeter } from '@/components/dashboard/pacing-burn-meter';
+import { CashflowTrendChart } from '@/components/dashboard/cashflow-trend-chart';
+import { SpendingDonutChart } from '@/components/dashboard/spending-donut-chart';
+import {
+  ArrowUpRight,
+  ArrowDownLeft,
+  PiggyBank,
+  UploadCloud,
   ChevronRight,
+  ChevronLeft,
   TrendingUp,
   Building2,
   AlertCircle,
-  CheckCircle2,
   Calendar,
   Wallet,
-  Scale
+  Scale,
+  SlidersHorizontal,
 } from 'lucide-react';
 
 interface DashboardClientProps {
@@ -64,16 +71,45 @@ export function DashboardClient({
     { num: 12, label: 'Dec' },
   ];
 
-  const report = calculateMonthlyBudget({
-    year: selectedYear,
-    month: selectedMonth,
-    categories,
-    plans,
-    transactions,
-    shiftLateIncome: settings?.shiftLateIncome,
-    lateIncomeDay: settings?.lateIncomeDay,
-    savingsRateType: settings?.savingsRateType || 'active',
-  });
+  const report = useMemo(
+    () =>
+      calculateMonthlyBudget({
+        year: selectedYear,
+        month: selectedMonth,
+        categories,
+        plans,
+        transactions,
+        shiftLateIncome: settings?.shiftLateIncome,
+        lateIncomeDay: settings?.lateIncomeDay,
+        savingsRateType: settings?.savingsRateType || 'active',
+      }),
+    [selectedYear, selectedMonth, categories, plans, transactions, settings]
+  );
+
+  const yearlySeries = useMemo(
+    () =>
+      calculateYearlyCashflowSeries({
+        year: selectedYear,
+        categories,
+        plans,
+        transactions,
+        shiftLateIncome: settings?.shiftLateIncome,
+        lateIncomeDay: settings?.lateIncomeDay,
+        savingsRateType: settings?.savingsRateType || 'active',
+      }),
+    [selectedYear, categories, plans, transactions, settings]
+  );
+
+  const pacing = useMemo(
+    () =>
+      calculatePacingMetrics({
+        year: selectedYear,
+        month: selectedMonth,
+        totalPlannedExpenses: report.totalPlannedExpenses,
+        totalActualExpenses: report.totalActualExpenses,
+      }),
+    [selectedYear, selectedMonth, report.totalPlannedExpenses, report.totalActualExpenses]
+  );
 
   const periodTitle =
     selectedMonth === null
@@ -101,22 +137,52 @@ export function DashboardClient({
         </Link>
       </header>
 
-      {/* Period Switcher (Jan - Dec + Total Year) */}
+      {/* Period Switcher (Year + Jan - Dec + Total Year) */}
       <div className="space-y-1.5">
         <div className="flex items-center justify-between text-xs text-zinc-400 px-1">
-          <span className="flex items-center gap-1 font-medium">
-            <Calendar className="w-3.5 h-3.5 text-zinc-500" /> Select Period:
-          </span>
-          <button
-            onClick={() => setSelectedMonth(null)}
-            className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${
-              selectedMonth === null
-                ? 'bg-emerald-500 text-zinc-950 shadow-sm'
-                : 'text-zinc-400 hover:text-zinc-200 bg-zinc-900/80 border border-zinc-800'
-            }`}
-          >
-            Total Year
-          </button>
+          <div className="flex items-center gap-1.5">
+            <Calendar className="w-3.5 h-3.5 text-zinc-500" />
+            <div className="inline-flex items-center rounded-lg bg-zinc-900 border border-zinc-800">
+              <button
+                type="button"
+                onClick={() => setSelectedYear((y) => y - 1)}
+                className="p-1 text-zinc-400 hover:text-white transition-colors"
+                aria-label="Previous year"
+              >
+                <ChevronLeft className="w-3.5 h-3.5" />
+              </button>
+              <span className="px-2 text-xs font-bold text-zinc-200">{selectedYear}</span>
+              <button
+                type="button"
+                onClick={() => setSelectedYear((y) => y + 1)}
+                className="p-1 text-zinc-400 hover:text-white transition-colors"
+                aria-label="Next year"
+              >
+                <ChevronRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-1.5">
+            <button
+              type="button"
+              onClick={() => setSelectedMonth(null)}
+              className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${
+                selectedMonth === null
+                  ? 'bg-emerald-500 text-zinc-950 shadow-sm'
+                  : 'text-zinc-400 hover:text-zinc-200 bg-zinc-900/80 border border-zinc-800'
+              }`}
+            >
+              Total Year
+            </button>
+            <Link
+              href="/rules"
+              className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium text-zinc-400 hover:text-zinc-200 bg-zinc-900/80 border border-zinc-800 transition-colors"
+              title="Merchant Rules & Engine Settings"
+            >
+              <SlidersHorizontal className="w-3 h-3" />
+            </Link>
+          </div>
         </div>
 
         <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none">
@@ -255,6 +321,28 @@ export function DashboardClient({
           </p>
         </div>
       </div>
+
+      {/* Excel Dashboard Mirror: Pacing & Burn-Rate Meter */}
+      <PacingBurnMeter
+        pacing={pacing}
+        totalPlannedExpenses={report.totalPlannedExpenses}
+        totalActualExpenses={report.totalActualExpenses}
+        periodTitle={periodTitle}
+      />
+
+      {/* Excel Dashboard Mirror: 12-Month Cashflow Trend Chart */}
+      <CashflowTrendChart
+        year={selectedYear}
+        series={yearlySeries}
+        selectedMonth={selectedMonth}
+        onSelectMonth={(m) => setSelectedMonth(m)}
+      />
+
+      {/* Excel Dashboard Mirror: Interactive Spending Breakdown Donut */}
+      <SpendingDonutChart
+        categories={report.categories}
+        periodTitle={periodTitle}
+      />
 
       {/* Savings Rate Gauge Card */}
       <div className="p-4 rounded-2xl bg-zinc-900/60 border border-zinc-800/80 flex items-center justify-between">

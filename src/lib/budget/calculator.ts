@@ -222,3 +222,173 @@ export function calculateMonthlyBudget(params: {
     categories: categorySummaries,
   };
 }
+
+export interface MonthlyCashflowPoint {
+  month: number; // 1 - 12
+  label: string;
+  plannedIncome: number;
+  plannedExpenses: number;
+  plannedSavings: number;
+  actualIncome: number;
+  actualExpenses: number;
+  actualSavings: number;
+}
+
+const SHORT_MONTHS = [
+  'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+];
+
+export function calculateYearlyCashflowSeries(params: {
+  year: number;
+  categories: BudgetInputCategory[];
+  plans: BudgetInputPlan[];
+  transactions: BudgetInputTransaction[];
+  shiftLateIncome?: boolean;
+  lateIncomeDay?: number;
+  savingsRateType?: 'active' | 'passive';
+}): MonthlyCashflowPoint[] {
+  const series: MonthlyCashflowPoint[] = [];
+
+  for (let m = 1; m <= 12; m++) {
+    const rep = calculateMonthlyBudget({
+      ...params,
+      month: m,
+    });
+    series.push({
+      month: m,
+      label: SHORT_MONTHS[m - 1],
+      plannedIncome: rep.totalPlannedIncome,
+      plannedExpenses: rep.totalPlannedExpenses,
+      plannedSavings: rep.totalPlannedSavings,
+      actualIncome: rep.totalActualIncome,
+      actualExpenses: rep.totalActualExpenses,
+      actualSavings: rep.totalActualSavings,
+    });
+  }
+
+  return series;
+}
+
+export interface PacingMetrics {
+  totalDays: number;
+  daysElapsed: number;
+  daysRemaining: number;
+  daysPassedPct: number; // 0 - 100
+  budgetSpentPct: number; // can exceed 100
+  pacingDeltaPct: number; // budgetSpentPct - daysPassedPct
+  dailyActualBurn: number; // pence/day
+  dailySafeAllowance: number; // pence/day remaining
+  projectedTotalSpend: number; // pence
+  periodState: 'past' | 'current' | 'future';
+  status: 'on_track' | 'caution' | 'over_pace' | 'completed_under' | 'completed_over' | 'upcoming';
+}
+
+export function calculatePacingMetrics(params: {
+  year: number;
+  month: number | null; // null = full year
+  totalPlannedExpenses: number;
+  totalActualExpenses: number;
+  referenceDate?: Date;
+}): PacingMetrics {
+  const {
+    year,
+    month,
+    totalPlannedExpenses,
+    totalActualExpenses,
+    referenceDate = new Date(),
+  } = params;
+
+  const refYear = referenceDate.getFullYear();
+  const refMonth = referenceDate.getMonth() + 1;
+  const refDay = referenceDate.getDate();
+
+  let totalDays = 30;
+  let daysElapsed = 0;
+  let periodState: 'past' | 'current' | 'future' = 'current';
+
+  if (month === null) {
+    // Full year pacing
+    const isLeap = (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
+    totalDays = isLeap ? 366 : 365;
+
+    if (year < refYear) {
+      periodState = 'past';
+      daysElapsed = totalDays;
+    } else if (year > refYear) {
+      periodState = 'future';
+      daysElapsed = 0;
+    } else {
+      periodState = 'current';
+      const startOfYear = new Date(year, 0, 1);
+      const todayMidnight = new Date(refYear, refMonth - 1, refDay);
+      daysElapsed = Math.max(
+        1,
+        Math.floor((todayMidnight.getTime() - startOfYear.getTime()) / (1000 * 60 * 60 * 24)) + 1
+      );
+    }
+  } else {
+    // Single month pacing
+    totalDays = new Date(year, month, 0).getDate();
+
+    if (year < refYear || (year === refYear && month < refMonth)) {
+      periodState = 'past';
+      daysElapsed = totalDays;
+    } else if (year > refYear || (year === refYear && month > refMonth)) {
+      periodState = 'future';
+      daysElapsed = 0;
+    } else {
+      periodState = 'current';
+      daysElapsed = Math.min(totalDays, Math.max(1, refDay));
+    }
+  }
+
+  const daysRemaining = Math.max(0, totalDays - daysElapsed);
+  const daysPassedPct = totalDays > 0 ? Math.round((daysElapsed / totalDays) * 100) : 0;
+  const budgetSpentPct =
+    totalPlannedExpenses > 0
+      ? Math.round((totalActualExpenses / totalPlannedExpenses) * 100)
+      : totalActualExpenses > 0
+      ? 100
+      : 0;
+  const pacingDeltaPct = budgetSpentPct - daysPassedPct;
+
+  const dailyActualBurn =
+    daysElapsed > 0 ? Math.round(totalActualExpenses / daysElapsed) : 0;
+  const remainingBudget = Math.max(0, totalPlannedExpenses - totalActualExpenses);
+  const dailySafeAllowance =
+    daysRemaining > 0 ? Math.round(remainingBudget / daysRemaining) : 0;
+  const projectedTotalSpend =
+    periodState === 'current' && daysElapsed > 0
+      ? Math.round((totalActualExpenses / daysElapsed) * totalDays)
+      : totalActualExpenses;
+
+  let status: PacingMetrics['status'] = 'on_track';
+  if (periodState === 'future') {
+    status = 'upcoming';
+  } else if (periodState === 'past') {
+    status = totalActualExpenses <= totalPlannedExpenses ? 'completed_under' : 'completed_over';
+  } else {
+    if (budgetSpentPct > 100 || pacingDeltaPct > 10) {
+      status = 'over_pace';
+    } else if (pacingDeltaPct > 0) {
+      status = 'caution';
+    } else {
+      status = 'on_track';
+    }
+  }
+
+  return {
+    totalDays,
+    daysElapsed,
+    daysRemaining,
+    daysPassedPct,
+    budgetSpentPct,
+    pacingDeltaPct,
+    dailyActualBurn,
+    dailySafeAllowance,
+    projectedTotalSpend,
+    periodState,
+    status,
+  };
+}
