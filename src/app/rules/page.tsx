@@ -3,6 +3,7 @@ import { db } from '@/lib/db';
 import { categorizationRules, categories, appSettings, transactions } from '@/lib/db/schema';
 import { desc, eq } from 'drizzle-orm';
 import { RulesManagerClient } from '@/components/rules/rules-manager-client';
+import { PrivacyPwaSettingsCard } from '@/components/rules/privacy-pwa-settings-card';
 
 export const instant = false;
 
@@ -46,6 +47,8 @@ export default async function RulesPage() {
         }
         pendingCount={pendingTxs.length}
       />
+
+      <PrivacyPwaSettingsCard />
     </div>
   );
 }

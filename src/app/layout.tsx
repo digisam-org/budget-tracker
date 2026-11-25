@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { MobileNav } from "@/components/mobile-nav";
+import { PwaProvider } from "@/components/pwa/pwa-provider";
 
 export const metadata: Metadata = {
   title: "Budget Tracker | PWA & CSV Ingestion Engine",
@@ -33,10 +34,12 @@ export default function RootLayout({
       className="dark h-full antialiased"
     >
       <body className="min-h-full bg-zinc-950 text-zinc-100 flex flex-col font-sans pb-20 selection:bg-emerald-500/30 selection:text-emerald-300">
-        <main className="flex-1 w-full max-w-lg mx-auto px-4 py-6">
-          {children}
-        </main>
-        <MobileNav />
+        <PwaProvider>
+          <main className="flex-1 w-full max-w-lg mx-auto px-4 py-6">
+            {children}
+          </main>
+          <MobileNav />
+        </PwaProvider>
       </body>
     </html>
   );
