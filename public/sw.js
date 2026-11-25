@@ -1,5 +1,11 @@
-const CACHE_NAME = 'budget-tracker-pwa-v1';
-const STATIC_ASSETS = [
+const CACHE_NAME = 'budget-tracker-pwa-v2';
+const PRECACHE_ROUTES = [
+  '/',
+  '/dropzone/',
+  '/review/',
+  '/budget/',
+  '/transactions/',
+  '/rules/',
   '/manifest.json',
   '/offline.html',
   '/icons/icon-192.svg',
@@ -8,7 +14,9 @@ const STATIC_ASSETS = [
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(STATIC_ASSETS))
+    caches.open(CACHE_NAME).then((cache) =>
+      Promise.allSettled(PRECACHE_ROUTES.map((url) => cache.add(url)))
+    )
   );
   self.skipWaiting();
 });
@@ -36,12 +44,11 @@ self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
-  // Only handle same-origin GET requests; never cache mutations
   if (request.method !== 'GET' || url.origin !== self.location.origin) {
     return;
   }
 
-  // 1. Page navigations: Network-first, fall back to cached page or offline.html
+  // 1. Page navigations: Network-first, fall back to cached route, root shell, or offline.html
   if (request.mode === 'navigate') {
     event.respondWith(
       fetch(request)
@@ -53,44 +60,22 @@ self.addEventListener('fetch', (event) => {
           return response;
         })
         .catch(async () => {
-          const cached = await caches.match(request);
-          return cached || (await caches.match('/offline.html'));
+          const exact = await caches.match(request);
+          if (exact) return exact;
+          const withSlash = await caches.match(
+            url.pathname.endsWith('/') ? url.pathname : `${url.pathname}/`
+          );
+          if (withSlash) return withSlash;
+          return (await caches.match('/')) || (await caches.match('/offline.html'));
         })
     );
     return;
   }
 
-  // 2. Static Next.js chunks & icons: Stale-while-revalidate
-  if (
-    url.pathname.startsWith('/_next/static/') ||
-    url.pathname.startsWith('/icons/') ||
-    url.pathname.endsWith('.svg') ||
-    url.pathname.endsWith('.png') ||
-    url.pathname.endsWith('.css') ||
-    url.pathname.endsWith('.js')
-  ) {
-    event.respondWith(
-      caches.match(request).then((cached) => {
-        const networkFetch = fetch(request)
-          .then((response) => {
-            if (response.ok) {
-              const copy = response.clone();
-              caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
-            }
-            return response;
-          })
-          .catch(() => cached);
-
-        return cached || networkFetch;
-      })
-    );
-    return;
-  }
-
-  // 3. API GET requests: Network-first with cache fallback for offline viewing
-  if (url.pathname.startsWith('/api/')) {
-    event.respondWith(
-      fetch(request)
+  // 2. Static assets (JS/CSS/SVG/PNG/JSON chunks): Stale-while-revalidate for instant offline boot
+  event.respondWith(
+    caches.match(request).then((cached) => {
+      const networkFetch = fetch(request)
         .then((response) => {
           if (response.ok) {
             const copy = response.clone();
@@ -98,7 +83,9 @@ self.addEventListener('fetch', (event) => {
           }
           return response;
         })
-        .catch(() => caches.match(request))
-    );
-  }
+        .catch(() => cached);
+
+      return cached || networkFetch;
+    })
+  );
 });

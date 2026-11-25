@@ -1,20 +1,11 @@
-import { connection } from 'next/server';
-import { db } from '@/lib/db';
-import { categories, budgetPlans, transactions, appSettings } from '@/lib/db/schema';
+'use client';
+
+import { useLocalAppData } from '@/lib/storage/use-local-app-data';
 import { BudgetPlannerClient } from '@/components/budget/budget-planner-client';
+import { Loader2 } from 'lucide-react';
 
-export const instant = false;
-
-export default async function BudgetPage() {
-  await connection();
-
-  const allCategories = await db.select().from(categories);
-  const allPlans = await db.select().from(budgetPlans);
-  const allTransactions = await db.select().from(transactions);
-  const [settings] = await db.select().from(appSettings);
-
-  const defaultYear = settings?.startingYear || 2026;
-  const defaultMonth = 9; // September 2026
+export default function BudgetPage() {
+  const { data, error } = useLocalAppData();
 
   return (
     <div className="space-y-6">
@@ -25,14 +16,25 @@ export default async function BudgetPage() {
         </p>
       </div>
 
-      <BudgetPlannerClient
-        initialYear={defaultYear}
-        initialMonth={defaultMonth}
-        categories={allCategories}
-        initialPlans={allPlans}
-        transactions={allTransactions}
-        settings={settings || null}
-      />
+      {error ? (
+        <div className="p-6 rounded-3xl bg-rose-500/10 border border-rose-500/30 text-xs text-rose-300">
+          {error}
+        </div>
+      ) : !data ? (
+        <div className="min-h-[40vh] flex flex-col items-center justify-center gap-3 text-zinc-400">
+          <Loader2 className="w-6 h-6 animate-spin text-emerald-400" />
+          <p className="text-xs">Loading budget plans...</p>
+        </div>
+      ) : (
+        <BudgetPlannerClient
+          initialYear={data.settings.startingYear || 2026}
+          initialMonth={9}
+          categories={data.categories}
+          initialPlans={data.plans}
+          transactions={data.transactions}
+          settings={data.settings}
+        />
+      )}
     </div>
   );
 }

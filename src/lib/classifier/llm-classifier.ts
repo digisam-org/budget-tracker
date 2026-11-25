@@ -1,4 +1,4 @@
-import { Category, CategorizationRule } from '../db/schema';
+import { Category, CategorizationRule } from '@/lib/types';
 
 export interface ClassificationInputItem {
   index: number;
@@ -260,13 +260,23 @@ export async function classifyTransactionsBatchWithLLM(params: {
   items: ClassificationInputItem[];
   categories: Category[];
   existingRules?: CategorizationRule[];
+  geminiApiKey?: string;
+  openaiApiKey?: string;
 }): Promise<ClassificationResultItem[]> {
   const { items, categories, existingRules = [] } = params;
   if (items.length === 0) return [];
 
-  const geminiKey =
-    process.env.GEMINI_API_KEY || process.env.GOOGLE_GENERATIVE_AI_API_KEY;
-  const openaiKey = process.env.OPENAI_API_KEY;
+  const envGemini =
+    typeof process !== 'undefined' && process.env
+      ? process.env.GEMINI_API_KEY || process.env.GOOGLE_GENERATIVE_AI_API_KEY
+      : undefined;
+  const envOpenai =
+    typeof process !== 'undefined' && process.env
+      ? process.env.OPENAI_API_KEY
+      : undefined;
+
+  const geminiKey = params.geminiApiKey || envGemini;
+  const openaiKey = params.openaiApiKey || envOpenai;
 
   const validCategoryIds = new Set(categories.map((c) => c.id));
   const categoryCatalogText = categories

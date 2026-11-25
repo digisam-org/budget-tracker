@@ -33,7 +33,8 @@ export function MobileNav() {
     <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-zinc-800 bg-zinc-950/85 backdrop-blur-xl px-2 py-2 safe-area-bottom">
       <div className="max-w-md mx-auto flex items-center justify-around">
         {navItems.map((item) => {
-          const isActive = pathname === item.href;
+          const normalizedPath = pathname === '/' ? '/' : pathname.replace(/\/+$/, '');
+          const isActive = normalizedPath === item.href;
           const Icon = item.icon;
 
           return (

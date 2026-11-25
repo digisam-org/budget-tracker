@@ -1,4 +1,4 @@
-import { CategorizationRule } from '../db/schema';
+import { CategorizationRule } from '@/lib/types';
 
 export interface RuleMatch {
   categoryId: string;

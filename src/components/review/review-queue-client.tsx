@@ -2,7 +2,11 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Transaction, Category } from '@/lib/db/schema';
+import { Transaction, Category } from '@/lib/types';
+import {
+  classifyLocalPendingTransactions,
+  reviewLocalTransaction,
+} from '@/lib/storage/local-services';
 import { formatCurrency } from '@/lib/utils';
 import { SplitTransactionModal } from '@/components/transactions/split-transaction-modal';
 import {
@@ -44,25 +48,18 @@ export function ReviewQueueClient({
     setAiStatusBanner(null);
 
     try {
-      const res = await fetch('/api/classify', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ classifyPendingInDb: true }),
-      });
-      const data = await res.json();
-      if (data.success && Array.isArray(data.updatedTransactions)) {
-        const remainingPending = (data.updatedTransactions as Transaction[]).filter(
-          (tx) => tx.status === 'pending'
-        );
+      const data = await classifyLocalPendingTransactions();
+      const remainingPending = data.updatedTransactions.filter(
+        (tx) => tx.status === 'pending'
+      );
 
-        setItems(remainingPending);
-        setCurrentIndex(0);
-        setSelectedCategory('');
-        setCustomMerchant('');
-        setAiStatusBanner(
-          `AI classified ${data.processedCount} items (${data.autoReviewedCount} high-confidence items auto-approved!)`
-        );
-      }
+      setItems(remainingPending);
+      setCurrentIndex(0);
+      setSelectedCategory('');
+      setCustomMerchant('');
+      setAiStatusBanner(
+        `Classified ${data.processedCount} items (${data.autoReviewedCount} high-confidence items auto-approved!)`
+      );
     } catch (err) {
       console.error('Smart classify error:', err);
     } finally {
@@ -95,18 +92,14 @@ export function ReviewQueueClient({
       customMerchant.trim() || currentItem.cleanMerchant || currentItem.rawDescription;
 
     try {
-      await fetch('/api/transactions/review', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          transactionId: currentItem.id,
-          categoryId: catId,
-          cleanMerchant: merchantToSave,
-          createRule: saveAsRule,
-          rulePattern:
-            merchantToSave.slice(0, 20) || currentItem.rawDescription.slice(0, 15),
-          status: 'reviewed',
-        }),
+      await reviewLocalTransaction({
+        transactionId: currentItem.id,
+        categoryId: catId,
+        cleanMerchant: merchantToSave,
+        createRule: saveAsRule,
+        rulePattern:
+          merchantToSave.slice(0, 20) || currentItem.rawDescription.slice(0, 15),
+        status: 'reviewed',
       });
 
       advanceQueue(currentItem.id);
@@ -121,13 +114,9 @@ export function ReviewQueueClient({
     if (!currentItem) return;
     setIsSubmitting(true);
     try {
-      await fetch('/api/transactions/review', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          transactionId: currentItem.id,
-          status: 'ignored',
-        }),
+      await reviewLocalTransaction({
+        transactionId: currentItem.id,
+        status: 'ignored',
       });
       advanceQueue(currentItem.id);
     } catch (err) {

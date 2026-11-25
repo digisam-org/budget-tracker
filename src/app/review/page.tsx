@@ -1,21 +1,16 @@
+'use client';
+
 import Link from 'next/link';
-import { connection } from 'next/server';
-import { db } from '@/lib/db';
-import { transactions, categories } from '@/lib/db/schema';
-import { eq } from 'drizzle-orm';
-import { SlidersHorizontal } from 'lucide-react';
+import { SlidersHorizontal, Loader2 } from 'lucide-react';
+import { useLocalAppData } from '@/lib/storage/use-local-app-data';
 import { ReviewQueueClient } from '@/components/review/review-queue-client';
 
-export const instant = false;
+export default function ReviewPage() {
+  const { data, error } = useLocalAppData();
 
-export default async function ReviewPage() {
-  await connection();
-  const pendingTransactions = await db
-    .select()
-    .from(transactions)
-    .where(eq(transactions.status, 'pending'));
-
-  const allCategories = await db.select().from(categories);
+  const pendingTransactions = data
+    ? data.transactions.filter((t) => t.status === 'pending')
+    : [];
 
   return (
     <div className="space-y-6">
@@ -35,10 +30,21 @@ export default async function ReviewPage() {
         </Link>
       </div>
 
-      <ReviewQueueClient
-        initialTransactions={pendingTransactions}
-        categories={allCategories}
-      />
+      {error ? (
+        <div className="p-6 rounded-3xl bg-rose-500/10 border border-rose-500/30 text-xs text-rose-300">
+          {error}
+        </div>
+      ) : !data ? (
+        <div className="min-h-[40vh] flex flex-col items-center justify-center gap-3 text-zinc-400">
+          <Loader2 className="w-6 h-6 animate-spin text-emerald-400" />
+          <p className="text-xs">Loading pending queue...</p>
+        </div>
+      ) : (
+        <ReviewQueueClient
+          initialTransactions={pendingTransactions}
+          categories={data.categories}
+        />
+      )}
     </div>
   );
 }

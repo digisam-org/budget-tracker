@@ -8,7 +8,7 @@ import {
   Transaction,
   Account,
   AppSettings,
-} from '@/lib/db/schema';
+} from '@/lib/types';
 import {
   calculateMonthlyBudget,
   calculateYearlyCashflowSeries,

@@ -2,27 +2,86 @@
 
 import { useState, useRef } from 'react';
 import {
+  exportLocalJsonSnapshot,
+  exportLocalExcelWorkbook,
+  restoreLocalJsonSnapshot,
+  triggerBrowserDownload,
+} from '@/lib/storage/local-services';
+import { resetLocalDbToSeed } from '@/lib/storage/local-db';
+import {
   Database,
   FileJson,
   FileSpreadsheet,
-  HardDriveDownload,
   Upload,
   CheckCircle2,
   AlertTriangle,
   Loader2,
+  RotateCcw,
 } from 'lucide-react';
 
 interface BackupSyncCardProps {
   defaultYear?: number;
+  onRestored?: () => void;
 }
 
-export function BackupSyncCard({ defaultYear = 2026 }: BackupSyncCardProps) {
+export function BackupSyncCard({ defaultYear = 2026, onRestored }: BackupSyncCardProps) {
   const [exportYear, setExportYear] = useState<number>(defaultYear);
+  const [isExporting, setIsExporting] = useState(false);
   const [isRestoring, setIsRestoring] = useState(false);
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; text: string } | null>(
     null
   );
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const today = new Date().toISOString().split('T')[0];
+
+  const handleExportExcel = async () => {
+    setIsExporting(true);
+    setFeedback(null);
+    try {
+      const bytes = await exportLocalExcelWorkbook(exportYear);
+      triggerBrowserDownload(
+        bytes,
+        `Ultimate-Personal-Budget-${exportYear}-${today}.xlsx`,
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      );
+      setFeedback({
+        type: 'success',
+        text: `Downloaded ${exportYear} Excel archive directly from your device.`,
+      });
+    } catch (err: unknown) {
+      setFeedback({
+        type: 'error',
+        text: err instanceof Error ? err.message : 'Excel export failed',
+      });
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const handleExportJson = async () => {
+    setIsExporting(true);
+    setFeedback(null);
+    try {
+      const jsonStr = await exportLocalJsonSnapshot();
+      triggerBrowserDownload(
+        jsonStr,
+        `budget-tracker-snapshot-${today}.json`,
+        'application/json; charset=utf-8'
+      );
+      setFeedback({
+        type: 'success',
+        text: 'Downloaded full JSON snapshot (save to iCloud Drive / Files for safekeeping).',
+      });
+    } catch (err: unknown) {
+      setFeedback({
+        type: 'error',
+        text: err instanceof Error ? err.message : 'JSON export failed',
+      });
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   const handleRestoreFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -32,24 +91,13 @@ export function BackupSyncCard({ defaultYear = 2026 }: BackupSyncCardProps) {
     setFeedback(null);
 
     try {
-      const formData = new FormData();
-      formData.append('file', file);
-
-      const res = await fetch('/api/backup/restore', {
-        method: 'POST',
-        body: formData,
-      });
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || 'Failed to restore snapshot');
-      }
-
-      const c = data.restoredCounts;
+      const rawText = await file.text();
+      const c = await restoreLocalJsonSnapshot(rawText);
       setFeedback({
         type: 'success',
         text: `Restored ${c.transactions} transactions, ${c.budgetPlans} plans, ${c.categorizationRules} rules, and ${c.categories} categories.`,
       });
+      onRestored?.();
     } catch (err: unknown) {
       setFeedback({
         type: 'error',
@@ -63,22 +111,45 @@ export function BackupSyncCard({ defaultYear = 2026 }: BackupSyncCardProps) {
     }
   };
 
+  const handleResetSeed = async () => {
+    if (
+      !window.confirm(
+        'Reset on-device data back to your initial Ultimate Personal Budget Excel seed? (Export a JSON backup first if you want to keep newer edits.)'
+      )
+    ) {
+      return;
+    }
+    setIsRestoring(true);
+    try {
+      await resetLocalDbToSeed();
+      setFeedback({ type: 'success', text: 'Device storage reset to initial Excel seed.' });
+      onRestored?.();
+    } catch (err: unknown) {
+      setFeedback({
+        type: 'error',
+        text: err instanceof Error ? err.message : 'Reset failed',
+      });
+    } finally {
+      setIsRestoring(false);
+    }
+  };
+
   return (
     <div className="p-5 rounded-3xl bg-zinc-900 border border-zinc-800 space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Database className="w-4 h-4 text-emerald-400" />
-          <h2 className="text-sm font-bold text-white">Backup &amp; Bi-directional Sync</h2>
+          <h2 className="text-sm font-bold text-white">On-Device Backup &amp; Sync</h2>
         </div>
         <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-          Offline Archive
+          100% Local
         </span>
       </div>
 
       <p className="text-[11px] text-zinc-400 leading-relaxed">
-        Export a full snapshot to JSON or raw SQLite, or generate an Excel workbook matching your{' '}
-        <span className="text-zinc-200 font-medium">Ultimate Personal Budget Extended.xlsx</span>{' '}
-        layout (Settings, Budget Planning with live formulas, Budget Tracking, and Monthly Summary).
+        All your data lives strictly inside your phone&apos;s IndexedDB storage. Export offline
+        snapshots to iCloud Drive / Files as JSON or as a 4-sheet Excel workbook matching{' '}
+        <span className="text-zinc-200 font-medium">Ultimate Personal Budget Extended.xlsx</span>.
       </p>
 
       {feedback && (
@@ -98,7 +169,7 @@ export function BackupSyncCard({ defaultYear = 2026 }: BackupSyncCardProps) {
         </div>
       )}
 
-      {/* 1. Excel Workbook Export */}
+      {/* 1. Excel Workbook Export (100% Client-Side Offline!) */}
       <div className="p-3.5 rounded-2xl bg-zinc-950/70 border border-zinc-800 space-y-2.5">
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
@@ -125,55 +196,44 @@ export function BackupSyncCard({ defaultYear = 2026 }: BackupSyncCardProps) {
           />
         </div>
 
-        <a
-          href={`/api/backup/export?format=xlsx&year=${exportYear}`}
-          download
-          className="w-full py-2.5 px-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-zinc-950 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors"
+        <button
+          type="button"
+          onClick={handleExportExcel}
+          disabled={isExporting}
+          className="w-full py-2.5 px-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-zinc-950 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors disabled:opacity-50"
         >
-          <FileSpreadsheet className="w-3.5 h-3.5" />
+          {isExporting ? (
+            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+          ) : (
+            <FileSpreadsheet className="w-3.5 h-3.5" />
+          )}
           <span>Download {exportYear} Excel Workbook</span>
-        </a>
+        </button>
       </div>
 
-      {/* 2. Database Snapshots (JSON & SQLite) */}
+      {/* 2. JSON Snapshot & Restore */}
       <div className="grid grid-cols-2 gap-2">
-        <a
-          href="/api/backup/export?format=json"
-          download
-          className="p-3 rounded-2xl bg-zinc-950/70 hover:bg-zinc-800/80 border border-zinc-800 flex flex-col items-center justify-center gap-1.5 text-center transition-colors"
+        <button
+          type="button"
+          onClick={handleExportJson}
+          disabled={isExporting}
+          className="p-3 rounded-2xl bg-zinc-950/70 hover:bg-zinc-800/80 border border-zinc-800 flex flex-col items-center justify-center gap-1.5 text-center transition-colors disabled:opacity-50"
         >
           <FileJson className="w-5 h-5 text-sky-400" />
-          <span className="text-xs font-semibold text-zinc-200">JSON Snapshot</span>
-          <span className="text-[10px] text-zinc-500">Portable &amp; restorable</span>
-        </a>
+          <span className="text-xs font-semibold text-zinc-200">Export JSON</span>
+          <span className="text-[10px] text-zinc-500">Save to Files / iCloud</span>
+        </button>
 
-        <a
-          href="/api/backup/export?format=sqlite"
-          download
-          className="p-3 rounded-2xl bg-zinc-950/70 hover:bg-zinc-800/80 border border-zinc-800 flex flex-col items-center justify-center gap-1.5 text-center transition-colors"
-        >
-          <HardDriveDownload className="w-5 h-5 text-indigo-400" />
-          <span className="text-xs font-semibold text-zinc-200">SQLite (.db)</span>
-          <span className="text-[10px] text-zinc-500">Raw database binary</span>
-        </a>
-      </div>
-
-      {/* 3. Bi-directional Restore from JSON Snapshot */}
-      <div className="pt-2 border-t border-zinc-800/80 flex items-center justify-between gap-3">
-        <div className="space-y-0.5">
-          <p className="text-xs font-semibold text-zinc-200">Restore / Sync JSON Snapshot</p>
-          <p className="text-[11px] text-zinc-400">
-            Merge a previous backup back into SQLite without duplicating transactions.
-          </p>
-        </div>
-
-        <label className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-semibold cursor-pointer shrink-0 transition-colors">
+        <label className="p-3 rounded-2xl bg-zinc-950/70 hover:bg-zinc-800/80 border border-zinc-800 flex flex-col items-center justify-center gap-1.5 text-center cursor-pointer transition-colors">
           {isRestoring ? (
-            <Loader2 className="w-3.5 h-3.5 animate-spin text-emerald-400" />
+            <Loader2 className="w-5 h-5 animate-spin text-emerald-400" />
           ) : (
-            <Upload className="w-3.5 h-3.5 text-emerald-400" />
+            <Upload className="w-5 h-5 text-emerald-400" />
           )}
-          <span>{isRestoring ? 'Restoring...' : 'Import JSON'}</span>
+          <span className="text-xs font-semibold text-zinc-200">
+            {isRestoring ? 'Restoring...' : 'Restore JSON'}
+          </span>
+          <span className="text-[10px] text-zinc-500">Merge snapshot cleanly</span>
           <input
             ref={fileInputRef}
             type="file"
@@ -183,6 +243,22 @@ export function BackupSyncCard({ defaultYear = 2026 }: BackupSyncCardProps) {
             className="hidden"
           />
         </label>
+      </div>
+
+      {/* 3. Reset to Initial Seed */}
+      <div className="pt-2 border-t border-zinc-800/80 flex items-center justify-between gap-3">
+        <span className="text-[11px] text-zinc-500">
+          Need a fresh start from your initial Excel workbook?
+        </span>
+        <button
+          type="button"
+          onClick={handleResetSeed}
+          disabled={isRestoring}
+          className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-zinc-950 hover:bg-zinc-800 border border-zinc-800 text-zinc-400 hover:text-rose-400 text-[11px] font-medium shrink-0 transition-colors"
+        >
+          <RotateCcw className="w-3 h-3" />
+          <span>Reset Seed</span>
+        </button>
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Transaction, Category, Account } from '@/lib/db/schema';
+import { Transaction, Category, Account } from '@/lib/types';
 import { formatCurrency } from '@/lib/utils';
 import { SplitTransactionModal } from '@/components/transactions/split-transaction-modal';
 import { Search, CheckCircle2, Clock, Split, EyeOff } from 'lucide-react';

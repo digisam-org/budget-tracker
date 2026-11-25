@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { formatCurrency, parseToPence } from '@/lib/utils';
+import { parseToPence } from '@/lib/utils';
+import { loadAppData, ingestLocalData, StagedPreviewRow } from '@/lib/storage/local-services';
 import {
   UploadCloud,
   CheckCircle2,
@@ -78,22 +79,13 @@ export default function DropzonePage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch('/api/accounts')
-      .then((res) => res.json())
+    loadAppData()
       .then((data) => {
-        if (data.accounts && data.accounts.length > 0) {
+        if (data.accounts.length > 0) {
           setAccounts(data.accounts);
           setSelectedAccount(data.accounts[0].id);
         }
-      })
-      .catch(() => {});
-
-    fetch('/api/categories')
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.categories) {
-          setCategories(data.categories);
-        }
+        setCategories(data.categories);
       })
       .catch(() => {});
   }, []);
@@ -123,7 +115,7 @@ export default function DropzonePage() {
     }
   };
 
-  const mapApiRowsToUI = (rows: any[]): StagedRowUI[] => {
+  const mapApiRowsToUI = (rows: StagedPreviewRow[]): StagedRowUI[] => {
     return rows.map((r, idx) => ({
       tempId: r.tempId || `row_${idx}_${Date.now()}`,
       selected: !r.isDuplicate,
@@ -150,26 +142,13 @@ export default function DropzonePage() {
     setError(null);
     setResult(null);
 
-    const formData = new FormData();
-    formData.append('accountId', selectedAccount);
-    formData.append('mode', 'preview');
-
-    if (ingestTab === 'file' && file) {
-      formData.append('file', file);
-    } else {
-      formData.append('rawText', pastedText);
-    }
-
     try {
-      const res = await fetch('/api/ingest', {
-        method: 'POST',
-        body: formData,
+      const data = await ingestLocalData({
+        accountId: selectedAccount,
+        mode: 'preview',
+        file: ingestTab === 'file' ? file : null,
+        rawText: ingestTab === 'paste' ? pastedText : undefined,
       });
-
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || 'Failed to parse input');
-      }
 
       setDetectedBank(data.detectedBank || 'statement');
       const uiRows = mapApiRowsToUI(data.stagedRows || []);
@@ -177,7 +156,7 @@ export default function DropzonePage() {
 
       if (uiRows.length === 0) {
         setError(
-          'No transactions were automatically detected. You can add rows manually below or try a clearer screenshot.'
+          'No transactions were automatically detected. You can add rows manually below or try pasting copied text from your banking app.'
         );
       }
     } catch (err: unknown) {
@@ -193,23 +172,22 @@ export default function DropzonePage() {
     setIsProcessing(true);
     setError(null);
 
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('accountId', selectedAccount);
-    formData.append('mode', 'commit');
-
     try {
-      const res = await fetch('/api/ingest', {
-        method: 'POST',
-        body: formData,
+      const data = await ingestLocalData({
+        accountId: selectedAccount,
+        mode: 'commit',
+        file,
       });
 
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || 'Failed to ingest statement');
-      }
-
-      setResult(data);
+      setResult({
+        success: data.success,
+        batchId: data.batchId || '',
+        detectedBank: data.detectedBank,
+        confidence: data.confidence,
+        totalRows: data.totalRows,
+        importedCount: data.importedCount ?? 0,
+        duplicateCount: data.duplicateCount,
+      });
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'An error occurred during upload');
     } finally {
@@ -238,25 +216,25 @@ export default function DropzonePage() {
           rawDescription: r.rawDescription || r.cleanMerchant,
           cleanMerchant: r.cleanMerchant || r.rawDescription,
           categoryId: r.categoryId || null,
+          isTransferCandidate: r.isTransferCandidate,
         };
       });
 
-      const res = await fetch('/api/ingest', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          accountId: selectedAccount,
-          filename: file?.name || 'Screenshot / Mid-Month Import',
-          rows: payloadRows,
-        }),
+      const data = await ingestLocalData({
+        accountId: selectedAccount,
+        mode: 'commit',
+        manualRows: payloadRows,
       });
 
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || 'Failed to commit transactions');
-      }
-
-      setResult(data);
+      setResult({
+        success: data.success,
+        batchId: data.batchId || '',
+        detectedBank: data.detectedBank,
+        confidence: data.confidence,
+        totalRows: data.totalRows,
+        importedCount: data.importedCount ?? 0,
+        duplicateCount: data.duplicateCount,
+      });
       setStagedRows(null);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Failed to commit transactions');

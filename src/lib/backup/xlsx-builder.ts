@@ -1,14 +1,13 @@
-import { deflateRawSync } from 'zlib';
 import {
   AppSettings,
   Account,
   Category,
   BudgetPlan,
   Transaction,
-} from '@/lib/db/schema';
+} from '@/lib/types';
 import { calculateYearlyCashflowSeries } from '@/lib/budget/calculator';
 
-// ---- Minimal Standards-Compliant ZIP Builder (Store / Deflate) ----
+// ---- Pure Browser & Node Standards-Compliant ZIP Builder (Store Mode, Zero Node Deps) ----
 
 const CRC_TABLE = (() => {
   const table = new Uint32Array(256);
@@ -22,83 +21,97 @@ const CRC_TABLE = (() => {
   return table;
 })();
 
-function crc32(buf: Buffer): number {
+function crc32(bytes: Uint8Array): number {
   let c = 0xffffffff;
-  for (let i = 0; i < buf.length; i++) {
-    c = CRC_TABLE[(c ^ buf[i]) & 0xff] ^ (c >>> 8);
+  for (let i = 0; i < bytes.length; i++) {
+    c = CRC_TABLE[(c ^ bytes[i]) & 0xff] ^ (c >>> 8);
   }
   return (c ^ 0xffffffff) >>> 0;
 }
 
-interface ZipEntry {
-  name: string;
-  data: Buffer;
+function concatUint8Arrays(arrays: Uint8Array[]): Uint8Array {
+  const totalLen = arrays.reduce((sum, a) => sum + a.length, 0);
+  const out = new Uint8Array(totalLen);
+  let pos = 0;
+  for (const a of arrays) {
+    out.set(a, pos);
+    pos += a.length;
+  }
+  return out;
 }
 
-function createZipBuffer(entries: ZipEntry[]): Buffer {
-  const localParts: Buffer[] = [];
-  const centralParts: Buffer[] = [];
+interface ZipEntry {
+  name: string;
+  data: Uint8Array;
+}
+
+function createZipUint8Array(entries: ZipEntry[]): Uint8Array {
+  const encoder = new TextEncoder();
+  const localParts: Uint8Array[] = [];
+  const centralParts: Uint8Array[] = [];
   let offset = 0;
 
   for (const entry of entries) {
-    const nameBuf = Buffer.from(entry.name, 'utf8');
-    const uncompressed = entry.data;
-    const compressed = deflateRawSync(uncompressed);
-    const crc = crc32(uncompressed);
+    const nameBytes = encoder.encode(entry.name);
+    const data = entry.data;
+    const crc = crc32(data);
 
-    // Local File Header (30 bytes + name)
-    const localHeader = Buffer.alloc(30);
-    localHeader.writeUInt32LE(0x04034b50, 0); // signature
-    localHeader.writeUInt16LE(20, 4); // version needed
-    localHeader.writeUInt16LE(0, 6); // flags
-    localHeader.writeUInt16LE(8, 8); // compression method: deflate
-    localHeader.writeUInt16LE(0, 10); // mod time
-    localHeader.writeUInt16LE(0, 12); // mod date
-    localHeader.writeUInt32LE(crc, 14);
-    localHeader.writeUInt32LE(compressed.length, 18);
-    localHeader.writeUInt32LE(uncompressed.length, 22);
-    localHeader.writeUInt16LE(nameBuf.length, 26);
-    localHeader.writeUInt16LE(0, 28); // extra len
+    // Local File Header (30 bytes + name) — method 0 (STORE) is universally supported by Excel/Numbers/Sheets
+    const localHeader = new Uint8Array(30);
+    const lhView = new DataView(localHeader.buffer);
+    lhView.setUint32(0, 0x04034b50, true);
+    lhView.setUint16(4, 20, true);
+    lhView.setUint16(6, 0, true);
+    lhView.setUint16(8, 0, true); // STORE (no zlib dependency)
+    lhView.setUint16(10, 0, true);
+    lhView.setUint16(12, 0, true);
+    lhView.setUint32(14, crc, true);
+    lhView.setUint32(18, data.length, true);
+    lhView.setUint32(22, data.length, true);
+    lhView.setUint16(26, nameBytes.length, true);
+    lhView.setUint16(28, 0, true);
 
-    localParts.push(localHeader, nameBuf, compressed);
+    localParts.push(localHeader, nameBytes, data);
 
     // Central Directory Header (46 bytes + name)
-    const centralHeader = Buffer.alloc(46);
-    centralHeader.writeUInt32LE(0x02014b50, 0); // signature
-    centralHeader.writeUInt16LE(20, 4); // version made by
-    centralHeader.writeUInt16LE(20, 6); // version needed
-    centralHeader.writeUInt16LE(0, 8); // flags
-    centralHeader.writeUInt16LE(8, 10); // deflate
-    centralHeader.writeUInt16LE(0, 12);
-    centralHeader.writeUInt16LE(0, 14);
-    centralHeader.writeUInt32LE(crc, 16);
-    centralHeader.writeUInt32LE(compressed.length, 20);
-    centralHeader.writeUInt32LE(uncompressed.length, 24);
-    centralHeader.writeUInt16LE(nameBuf.length, 28);
-    centralHeader.writeUInt16LE(0, 30); // extra len
-    centralHeader.writeUInt16LE(0, 32); // comment len
-    centralHeader.writeUInt16LE(0, 34); // disk start
-    centralHeader.writeUInt16LE(0, 36); // internal attrs
-    centralHeader.writeUInt32LE(0, 38); // external attrs
-    centralHeader.writeUInt32LE(offset, 42); // relative offset
+    const centralHeader = new Uint8Array(46);
+    const chView = new DataView(centralHeader.buffer);
+    chView.setUint32(0, 0x02014b50, true);
+    chView.setUint16(4, 20, true);
+    chView.setUint16(6, 20, true);
+    chView.setUint16(8, 0, true);
+    chView.setUint16(10, 0, true); // STORE
+    chView.setUint16(12, 0, true);
+    chView.setUint16(14, 0, true);
+    chView.setUint32(16, crc, true);
+    chView.setUint32(20, data.length, true);
+    chView.setUint32(24, data.length, true);
+    chView.setUint16(28, nameBytes.length, true);
+    chView.setUint16(30, 0, true);
+    chView.setUint16(32, 0, true);
+    chView.setUint16(34, 0, true);
+    chView.setUint16(36, 0, true);
+    chView.setUint32(38, 0, true);
+    chView.setUint32(42, offset, true);
 
-    centralParts.push(centralHeader, nameBuf);
+    centralParts.push(centralHeader, nameBytes);
 
-    offset += localHeader.length + nameBuf.length + compressed.length;
+    offset += localHeader.length + nameBytes.length + data.length;
   }
 
-  const centralDirBuf = Buffer.concat(centralParts);
-  const endRecord = Buffer.alloc(22);
-  endRecord.writeUInt32LE(0x06054b50, 0); // EOCD signature
-  endRecord.writeUInt16LE(0, 4);
-  endRecord.writeUInt16LE(0, 6);
-  endRecord.writeUInt16LE(entries.length, 8);
-  endRecord.writeUInt16LE(entries.length, 10);
-  endRecord.writeUInt32LE(centralDirBuf.length, 12);
-  endRecord.writeUInt32LE(offset, 16);
-  endRecord.writeUInt16LE(0, 20);
+  const centralDirBuf = concatUint8Arrays(centralParts);
+  const endRecord = new Uint8Array(22);
+  const erView = new DataView(endRecord.buffer);
+  erView.setUint32(0, 0x06054b50, true);
+  erView.setUint16(4, 0, true);
+  erView.setUint16(6, 0, true);
+  erView.setUint16(8, entries.length, true);
+  erView.setUint16(10, entries.length, true);
+  erView.setUint32(12, centralDirBuf.length, true);
+  erView.setUint32(16, offset, true);
+  erView.setUint16(20, 0, true);
 
-  return Buffer.concat([...localParts, centralDirBuf, endRecord]);
+  return concatUint8Arrays([...localParts, centralDirBuf, endRecord]);
 }
 
 // ---- OOXML Worksheet Helpers ----
@@ -130,16 +143,10 @@ interface SheetRow {
   cells: Record<string, CellValue>;
 }
 
-// Style indices matching xl/styles.xml below:
-// 0 = Normal
-// 1 = Bold Header (dark fill, white text)
-// 2 = Bold Section Title
-// 3 = GBP Currency (£#,##0.00)
-// 4 = Bold GBP Currency (Totals)
-// 5 = Date (yyyy-mm-dd)
-// 6 = Percentage (0%)
-
-function buildWorksheetXml(rows: SheetRow[], colWidths: Array<{ min: number; max: number; width: number }>): string {
+function buildWorksheetXml(
+  rows: SheetRow[],
+  colWidths: Array<{ min: number; max: number; width: number }>
+): string {
   const colsXml =
     colWidths.length > 0
       ? `<cols>${colWidths
@@ -229,13 +236,14 @@ export function buildUltimateBudgetWorkbook(params: {
   categories: Category[];
   plans: BudgetPlan[];
   transactions: Transaction[];
-}): Buffer {
+}): Uint8Array {
   const { year, settings, accounts, categories, plans, transactions } = params;
+  const encoder = new TextEncoder();
 
   const accMap = new Map(accounts.map((a) => [a.id, a.name]));
   const catMap = new Map(categories.map((c) => [c.id, c]));
 
-  // ---- Sheet 1: Settings (mirrors Ultimate Personal Budget Extended.xlsx Col D/E) ----
+  // ---- Sheet 1: Settings ----
   const settingsRows: SheetRow[] = [
     {
       rowNum: 2,
@@ -282,12 +290,15 @@ export function buildUltimateBudgetWorkbook(params: {
       rowNum: 9,
       cells: {
         D: { type: 'str', value: 'Exported From:', style: 2 },
-        E: { type: 'str', value: `Budget Tracker PWA (${new Date().toISOString().split('T')[0]})` },
+        E: {
+          type: 'str',
+          value: `Budget Tracker PWA (${new Date().toISOString().split('T')[0]})`,
+        },
       },
     },
   ];
 
-  // ---- Sheet 2: Budget Planning (mirrors Col C Category, Col D Annual, Col E-P Jan-Dec) ----
+  // ---- Sheet 2: Budget Planning ----
   const planLookup = new Map<string, number>();
   for (const p of plans) {
     if (p.year === year) {
@@ -368,7 +379,6 @@ export function buildUltimateBudgetWorkbook(params: {
     r += 2;
   }
 
-  // Zero-Based "To be allocated:" formula row
   const tbaCells: Record<string, CellValue> = {
     C: { type: 'str', value: 'To be allocated:', style: 1 },
     D: {
@@ -386,7 +396,7 @@ export function buildUltimateBudgetWorkbook(params: {
   });
   bpRows.push({ rowNum: r, cells: tbaCells });
 
-  // ---- Sheet 3: Budget Tracking (exact Row 11 header, Row 12+ Col C-I layout) ----
+  // ---- Sheet 3: Budget Tracking ----
   const btRows: SheetRow[] = [
     {
       rowNum: 11,
@@ -437,7 +447,7 @@ export function buildUltimateBudgetWorkbook(params: {
     btRowNum++;
   }
 
-  // ---- Sheet 4: Monthly Summary (12-Month Planned vs Actual Dashboard Archive) ----
+  // ---- Sheet 4: Monthly Summary ----
   const series = calculateYearlyCashflowSeries({
     year,
     categories,
@@ -482,7 +492,6 @@ export function buildUltimateBudgetWorkbook(params: {
     });
   });
 
-  // Assemble OOXML files
   const sheet1Xml = buildWorksheetXml(settingsRows, [
     { min: 4, max: 4, width: 32 },
     { min: 5, max: 5, width: 32 },
@@ -542,15 +551,15 @@ export function buildUltimateBudgetWorkbook(params: {
   <Relationship Id="rId5" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>
 </Relationships>`;
 
-  return createZipBuffer([
-    { name: '[Content_Types].xml', data: Buffer.from(contentTypesXml, 'utf8') },
-    { name: '_rels/.rels', data: Buffer.from(rootRelsXml, 'utf8') },
-    { name: 'xl/workbook.xml', data: Buffer.from(workbookXml, 'utf8') },
-    { name: 'xl/_rels/workbook.xml.rels', data: Buffer.from(workbookRelsXml, 'utf8') },
-    { name: 'xl/styles.xml', data: Buffer.from(STYLES_XML, 'utf8') },
-    { name: 'xl/worksheets/sheet1.xml', data: Buffer.from(sheet1Xml, 'utf8') },
-    { name: 'xl/worksheets/sheet2.xml', data: Buffer.from(sheet2Xml, 'utf8') },
-    { name: 'xl/worksheets/sheet3.xml', data: Buffer.from(sheet3Xml, 'utf8') },
-    { name: 'xl/worksheets/sheet4.xml', data: Buffer.from(sheet4Xml, 'utf8') },
+  return createZipUint8Array([
+    { name: '[Content_Types].xml', data: encoder.encode(contentTypesXml) },
+    { name: '_rels/.rels', data: encoder.encode(rootRelsXml) },
+    { name: 'xl/workbook.xml', data: encoder.encode(workbookXml) },
+    { name: 'xl/_rels/workbook.xml.rels', data: encoder.encode(workbookRelsXml) },
+    { name: 'xl/styles.xml', data: encoder.encode(STYLES_XML) },
+    { name: 'xl/worksheets/sheet1.xml', data: encoder.encode(sheet1Xml) },
+    { name: 'xl/worksheets/sheet2.xml', data: encoder.encode(sheet2Xml) },
+    { name: 'xl/worksheets/sheet3.xml', data: encoder.encode(sheet3Xml) },
+    { name: 'xl/worksheets/sheet4.xml', data: encoder.encode(sheet4Xml) },
   ]);
 }

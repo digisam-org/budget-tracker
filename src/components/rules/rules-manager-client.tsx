@@ -1,8 +1,17 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { CategorizationRule, Category, AppSettings } from '@/lib/db/schema';
+import { CategorizationRule, Category, AppSettings } from '@/lib/types';
 import { matchRule } from '@/lib/classifier/rules-engine';
+import {
+  createLocalRule,
+  updateLocalRule,
+  deleteLocalRule,
+  applyLocalRulesToPending,
+  updateLocalSettings,
+  getLocalGeminiKey,
+  setLocalGeminiKey,
+} from '@/lib/storage/local-services';
 import {
   Plus,
   Trash2,
@@ -108,38 +117,33 @@ export function RulesManagerClient({
     setBanner(null);
 
     try {
-      const payload = {
-        id: editingRuleId || undefined,
-        pattern: pattern.trim(),
-        patternType,
-        categoryId,
-        cleanMerchant: cleanMerchant.trim() || null,
-        priority: Number.parseInt(priority, 10) || 10,
-      };
-
-      const res = await fetch('/api/rules', {
-        method: editingRuleId ? 'PATCH' : 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || 'Failed to save rule');
-      }
-
       if (editingRuleId) {
+        const updated = await updateLocalRule({
+          id: editingRuleId,
+          pattern: pattern.trim(),
+          patternType,
+          categoryId,
+          cleanMerchant: cleanMerchant.trim() || null,
+          priority: Number.parseInt(priority, 10) || 10,
+        });
         setRules((prev) =>
           prev
-            .map((r) => (r.id === editingRuleId ? data.rule : r))
+            .map((r) => (r.id === editingRuleId ? updated : r))
             .sort((a, b) => b.priority - a.priority)
         );
-        setBanner({ type: 'success', text: `Updated rule "${data.rule.pattern}".` });
+        setBanner({ type: 'success', text: `Updated rule "${updated.pattern}".` });
       } else {
+        const created = await createLocalRule({
+          pattern: pattern.trim(),
+          patternType,
+          categoryId,
+          cleanMerchant: cleanMerchant.trim() || null,
+          priority: Number.parseInt(priority, 10) || 10,
+        });
         setRules((prev) =>
-          [data.rule, ...prev].sort((a, b) => b.priority - a.priority)
+          [created, ...prev].sort((a, b) => b.priority - a.priority)
         );
-        setBanner({ type: 'success', text: `Created rule "${data.rule.pattern}".` });
+        setBanner({ type: 'success', text: `Created rule "${created.pattern}".` });
       }
       resetForm();
     } catch (err: unknown) {
@@ -155,12 +159,7 @@ export function RulesManagerClient({
   const handleDeleteRule = async (id: string, rulePattern: string) => {
     setBanner(null);
     try {
-      const res = await fetch(`/api/rules?id=${encodeURIComponent(id)}`, {
-        method: 'DELETE',
-      });
-      if (!res.ok) {
-        throw new Error('Failed to delete rule');
-      }
+      await deleteLocalRule(id);
       setRules((prev) => prev.filter((r) => r.id !== id));
       setBanner({ type: 'success', text: `Deleted rule "${rulePattern}".` });
     } catch (err: unknown) {
@@ -176,17 +175,8 @@ export function RulesManagerClient({
     setBanner(null);
 
     try {
-      const res = await fetch('/api/rules/apply', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ autoApprove: true }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || 'Failed to apply rules');
-      }
-
-      setPendingCount((prev) => Math.max(0, prev - (data.autoReviewedCount || 0)));
+      const data = await applyLocalRulesToPending(true);
+      setPendingCount((prev) => Math.max(0, prev - data.autoReviewedCount));
       setBanner({
         type: 'success',
         text: `Scanned ${data.scannedCount} pending items — ${data.matchedCount} matched rules & ${data.autoReviewedCount} auto-approved!`,
@@ -208,19 +198,9 @@ export function RulesManagerClient({
     setBanner(null);
 
     try {
-      const res = await fetch('/api/settings', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(patch),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || 'Failed to save settings');
-      }
-      if (data.settings) {
-        setSettings(data.settings);
-      }
-      setBanner({ type: 'success', text: 'Budget engine settings saved.' });
+      const updated = await updateLocalSettings(patch);
+      setSettings(updated);
+      setBanner({ type: 'success', text: 'Budget engine settings saved on device.' });
     } catch (err: unknown) {
       setBanner({
         type: 'error',
@@ -229,6 +209,24 @@ export function RulesManagerClient({
     } finally {
       setIsSavingSettings(false);
     }
+  };
+
+  // Optional BYOK Gemini API key for on-phone screenshot Vision OCR & AI classification
+  const [geminiKeyDraft, setGeminiKeyDraft] = useState<string>(() => getLocalGeminiKey());
+  const [hasSavedGeminiKey, setHasSavedGeminiKey] = useState<boolean>(() =>
+    Boolean(getLocalGeminiKey())
+  );
+
+  const handleSaveGeminiKey = () => {
+    setLocalGeminiKey(geminiKeyDraft);
+    const saved = Boolean(geminiKeyDraft.trim());
+    setHasSavedGeminiKey(saved);
+    setBanner({
+      type: 'success',
+      text: saved
+        ? 'Gemini API key saved locally on your phone (used only for Vision OCR & AI fallback).'
+        : 'Gemini API key removed (offline UK Smart Match remains active).',
+    });
   };
 
   return (
@@ -668,6 +666,43 @@ export function RulesManagerClient({
             >
               <p className="text-xs font-bold">Passive</p>
               <p className="text-[10px] opacity-80">(Income − Expenses) ÷ Income</p>
+            </button>
+          </div>
+        </div>
+
+        {/* Optional BYOK Gemini API Key (Stored Only on Phone) */}
+        <div className="space-y-2 pt-3 border-t border-zinc-800/80">
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-semibold text-zinc-200">
+              Optional Gemini API Key (On-Device BYOK)
+            </p>
+            <span
+              className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
+                hasSavedGeminiKey
+                  ? 'bg-emerald-500/15 text-emerald-400'
+                  : 'bg-zinc-800 text-zinc-400'
+              }`}
+            >
+              {hasSavedGeminiKey ? 'Active' : 'Offline Heuristics'}
+            </span>
+          </div>
+          <p className="text-[11px] text-zinc-400">
+            Stored only on your phone. Optional: enables direct screenshot Vision OCR &amp; Gemini 2.5 Flash categorization. Without a key, offline UK Smart Match &amp; Live Text paste work 100% offline.
+          </p>
+          <div className="flex gap-2">
+            <input
+              type="password"
+              value={geminiKeyDraft}
+              onChange={(e) => setGeminiKeyDraft(e.target.value)}
+              placeholder="AIza... (optional)"
+              className="flex-1 bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-white font-mono focus:outline-none focus:border-emerald-500"
+            />
+            <button
+              type="button"
+              onClick={handleSaveGeminiKey}
+              className="px-3.5 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-emerald-400 text-xs font-semibold shrink-0 transition-colors"
+            >
+              Save
             </button>
           </div>
         </div>

@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { Transaction, Category } from '@/lib/db/schema';
+import { Transaction, Category } from '@/lib/types';
+import { splitLocalTransaction } from '@/lib/storage/local-services';
 import { formatCurrency, parseToPence } from '@/lib/utils';
 import {
   Split,
@@ -151,19 +152,10 @@ export function SplitTransactionModal({
     setError(null);
 
     try {
-      const res = await fetch('/api/transactions/split', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          transactionId: transaction.id,
-          splits: splitsPayload,
-        }),
+      const data = await splitLocalTransaction({
+        transactionId: transaction.id,
+        splits: splitsPayload,
       });
-
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || 'Failed to split transaction');
-      }
 
       onSplitSuccess(transaction.id, data.splits || []);
     } catch (err: unknown) {

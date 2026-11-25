@@ -2,7 +2,8 @@
 
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
-import { Category, BudgetPlan, Transaction, AppSettings } from '@/lib/db/schema';
+import { Category, BudgetPlan, Transaction, AppSettings } from '@/lib/types';
+import { saveLocalBudgetPlan, copyLocalBudgetPlans } from '@/lib/storage/local-services';
 import { calculateMonthlyBudget } from '@/lib/budget/calculator';
 import { formatCurrency, parseToPence } from '@/lib/utils';
 import {
@@ -126,19 +127,12 @@ export function BudgetPlannerClient({
 
     setSavingCategory(categoryId);
     try {
-      const res = await fetch('/api/budget', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          year: selectedYear,
-          month: selectedMonth,
-          categoryId,
-          plannedAmount: pence,
-        }),
+      await saveLocalBudgetPlan({
+        year: selectedYear,
+        month: selectedMonth,
+        categoryId,
+        plannedAmount: pence,
       });
-      if (!res.ok) {
-        throw new Error('Failed to save budget plan');
-      }
     } catch (e) {
       console.error('Failed to save budget plan:', e);
       showError('Could not save allocation. Please retry.');
@@ -161,23 +155,13 @@ export function BudgetPlannerClient({
     const prevYear = selectedMonth === 1 ? selectedYear - 1 : selectedYear;
 
     try {
-      const res = await fetch('/api/budget/copy', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          sourceYear: prevYear,
-          sourceMonth: prevMonth,
-          targetYear: selectedYear,
-          targetMonths: [selectedMonth],
-        }),
+      const data = await copyLocalBudgetPlans({
+        sourceYear: prevYear,
+        sourceMonth: prevMonth,
+        targetYear: selectedYear,
+        targetMonths: [selectedMonth],
       });
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || 'Nothing to copy from previous month');
-      }
-      if (Array.isArray(data.plans)) {
-        setPlans(data.plans);
-      }
+      setPlans(data.plans);
       const prevLabel = MONTHS.find((m) => m.num === prevMonth)?.label || '';
       const currLabel = MONTHS.find((m) => m.num === selectedMonth)?.label || '';
       showSuccess(`Copied ${prevLabel} ${prevYear} plan into ${currLabel} ${selectedYear}.`);
@@ -199,23 +183,13 @@ export function BudgetPlannerClient({
     }
 
     try {
-      const res = await fetch('/api/budget/copy', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          sourceYear: selectedYear,
-          sourceMonth: selectedMonth,
-          targetYear: selectedYear,
-          targetMonths,
-        }),
+      const data = await copyLocalBudgetPlans({
+        sourceYear: selectedYear,
+        sourceMonth: selectedMonth,
+        targetYear: selectedYear,
+        targetMonths,
       });
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || 'Failed to apply plan to remaining months');
-      }
-      if (Array.isArray(data.plans)) {
-        setPlans(data.plans);
-      }
+      setPlans(data.plans);
       const currLabel = MONTHS.find((m) => m.num === selectedMonth)?.label || '';
       showSuccess(
         `Applied ${currLabel} plan to ${targetMonths.length} remaining month${
@@ -247,22 +221,12 @@ export function BudgetPlannerClient({
     setErrorBanner(null);
 
     try {
-      const res = await fetch('/api/budget/copy', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          targetYear: selectedYear,
-          targetMonths: [selectedMonth],
-          overrides,
-        }),
+      const data = await copyLocalBudgetPlans({
+        targetYear: selectedYear,
+        targetMonths: [selectedMonth],
+        overrides,
       });
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || 'Failed to fill from actuals');
-      }
-      if (Array.isArray(data.plans)) {
-        setPlans(data.plans);
-      }
+      setPlans(data.plans);
       showSuccess(`Synced ${overrides.length} categories to this month's tracked actuals.`);
     } catch (err: unknown) {
       showError(err instanceof Error ? err.message : 'Failed to fill from actuals');
