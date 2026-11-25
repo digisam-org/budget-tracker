@@ -4,6 +4,7 @@ import { categorizationRules, categories, appSettings, transactions } from '@/li
 import { desc, eq } from 'drizzle-orm';
 import { RulesManagerClient } from '@/components/rules/rules-manager-client';
 import { PrivacyPwaSettingsCard } from '@/components/rules/privacy-pwa-settings-card';
+import { BackupSyncCard } from '@/components/rules/backup-sync-card';
 
 export const instant = false;
 
@@ -49,6 +50,8 @@ export default async function RulesPage() {
       />
 
       <PrivacyPwaSettingsCard />
+
+      <BackupSyncCard defaultYear={settings?.startingYear || 2026} />
     </div>
   );
 }
