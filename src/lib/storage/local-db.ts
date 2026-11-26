@@ -7,8 +7,42 @@ import {
   CategorizationRule,
   ImportBatch,
 } from '@/lib/types';
-import excelData from '@/lib/db/excel-seed-data.json';
+import rawExcelData from '@/lib/db/excel-seed-data.json';
 import { generateFingerprint } from '@/lib/ingestion/fingerprint';
+
+interface ExcelSeedShape {
+  settings: {
+    startingYear: number;
+    shiftLateIncome: boolean;
+    lateIncomeDay: number;
+    savingsRateType: string;
+  };
+  categories: Array<{
+    id: string;
+    name: string;
+    type: string;
+    subgroup?: string | null;
+    isSavingsTransfer: boolean;
+    sortOrder: number;
+  }>;
+  budgetPlans: Array<{
+    categoryId: string;
+    year: number;
+    month: number;
+    plannedAmount: number;
+  }>;
+  transactions: Array<{
+    date?: string;
+    effectiveDate?: string;
+    type: string;
+    categoryId: string;
+    categoryName: string;
+    amount: number;
+    details?: string;
+  }>;
+}
+
+const excelData = rawExcelData as ExcelSeedShape;
 
 export type StoreName =
   | 'appSettings'
@@ -283,17 +317,20 @@ export function buildExcelSeedDataset(): {
   }));
 
   const seedBatchId = 'batch_excel_initial_import';
-  const importBatches: ImportBatch[] = [
-    {
-      id: seedBatchId,
-      filename: 'Ultimate Personal Budget Extended.xlsx',
-      accountId: 'acc_main_checking',
-      totalRows: excelData.transactions.length,
-      importedCount: excelData.transactions.length,
-      duplicateCount: 0,
-      createdAt: nowIso,
-    },
-  ];
+  const importBatches: ImportBatch[] =
+    excelData.transactions.length > 0
+      ? [
+          {
+            id: seedBatchId,
+            filename: 'Ultimate Personal Budget Extended.xlsx',
+            accountId: 'acc_main_checking',
+            totalRows: excelData.transactions.length,
+            importedCount: excelData.transactions.length,
+            duplicateCount: 0,
+            createdAt: nowIso,
+          },
+        ]
+      : [];
 
   const seenFingerprints = new Set<string>();
   const transactions: Transaction[] = [];

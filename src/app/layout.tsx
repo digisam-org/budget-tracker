@@ -3,10 +3,12 @@ import "./globals.css";
 import { MobileNav } from "@/components/mobile-nav";
 import { PwaProvider } from "@/components/pwa/pwa-provider";
 
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
+
 export const metadata: Metadata = {
   title: "Budget Tracker | PWA & CSV Ingestion Engine",
   description: "Self-directed zero-based personal budget PWA with frictionless bank statement ingestion",
-  manifest: "/manifest.json",
+  manifest: `${basePath}/manifest.json`,
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",

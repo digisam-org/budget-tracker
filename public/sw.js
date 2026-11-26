@@ -1,21 +1,27 @@
-const CACHE_NAME = 'budget-tracker-pwa-v2';
-const PRECACHE_ROUTES = [
-  '/',
-  '/dropzone/',
-  '/review/',
-  '/budget/',
-  '/transactions/',
-  '/rules/',
-  '/manifest.json',
-  '/offline.html',
-  '/icons/icon-192.svg',
-  '/icons/icon-512.svg',
+const CACHE_NAME = 'budget-tracker-pwa-v3';
+const RELATIVE_PRECACHE_PATHS = [
+  '',
+  'dropzone/',
+  'review/',
+  'budget/',
+  'transactions/',
+  'rules/',
+  'manifest.json',
+  'offline.html',
+  'icons/icon-192.svg',
+  'icons/icon-512.svg',
 ];
+
+function scopeUrl(relativePath) {
+  return new URL(relativePath, self.registration.scope).href;
+}
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) =>
-      Promise.allSettled(PRECACHE_ROUTES.map((url) => cache.add(url)))
+      Promise.allSettled(
+        RELATIVE_PRECACHE_PATHS.map((p) => cache.add(scopeUrl(p)))
+      )
     )
   );
   self.skipWaiting();
@@ -48,7 +54,7 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 1. Page navigations: Network-first, fall back to cached route, root shell, or offline.html
+  // 1. Page navigations: Network-first, fall back to cached route, scope root, or offline.html
   if (request.mode === 'navigate') {
     event.respondWith(
       fetch(request)
@@ -63,16 +69,19 @@ self.addEventListener('fetch', (event) => {
           const exact = await caches.match(request);
           if (exact) return exact;
           const withSlash = await caches.match(
-            url.pathname.endsWith('/') ? url.pathname : `${url.pathname}/`
+            url.pathname.endsWith('/') ? url.href : `${url.origin}${url.pathname}/`
           );
           if (withSlash) return withSlash;
-          return (await caches.match('/')) || (await caches.match('/offline.html'));
+          return (
+            (await caches.match(scopeUrl(''))) ||
+            (await caches.match(scopeUrl('offline.html')))
+          );
         })
     );
     return;
   }
 
-  // 2. Static assets (JS/CSS/SVG/PNG/JSON chunks): Stale-while-revalidate for instant offline boot
+  // 2. Static assets: Stale-while-revalidate for instant offline boot
   event.respondWith(
     caches.match(request).then((cached) => {
       const networkFetch = fetch(request)

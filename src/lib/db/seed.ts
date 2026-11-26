@@ -8,8 +8,40 @@ import {
   categorizationRules,
   importBatches 
 } from './schema';
-import excelData from './excel-seed-data.json';
+import rawExcelData from './excel-seed-data.json';
 import { generateFingerprint } from '../ingestion/fingerprint';
+
+const excelData = rawExcelData as {
+  settings: {
+    startingYear: number;
+    shiftLateIncome: boolean;
+    lateIncomeDay: number;
+    savingsRateType: string;
+  };
+  categories: Array<{
+    id: string;
+    name: string;
+    type: string;
+    subgroup?: string | null;
+    isSavingsTransfer: boolean;
+    sortOrder: number;
+  }>;
+  budgetPlans: Array<{
+    categoryId: string;
+    year: number;
+    month: number;
+    plannedAmount: number;
+  }>;
+  transactions: Array<{
+    date?: string;
+    effectiveDate?: string;
+    type: string;
+    categoryId: string;
+    categoryName: string;
+    amount: number;
+    details?: string;
+  }>;
+};
 
 export async function seedDatabase() {
   console.log('🌱 Seeding database from Excel budget blueprint...');

@@ -51,10 +51,11 @@ export function PwaProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    // Register sw.js
+    // Register sw.js (subpath-safe for GitHub Pages)
+    const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker
-        .register('/sw.js', { scope: '/' })
+        .register(`${basePath}/sw.js`, { scope: `${basePath}/` })
         .catch((err) => console.warn('SW registration failed:', err));
     }
 
